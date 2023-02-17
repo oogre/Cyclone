@@ -1,0 +1,22 @@
+{
+  "name": "midifighter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "./scripts/build.all.sh"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "midi": "^2.0.0",
+    "underscore": "^1.13.4",
+    "commander": "^9.4.0",
+    "fs-extra": "^10.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.7",
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.18.9"
+  }
+}
