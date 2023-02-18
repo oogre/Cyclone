@@ -1,19 +1,21 @@
 {
+	"PROCESS_NAME" : "Midi Fighter Twister",
 	"MIDI_DEVICE_NAME": "Midi Fighter Twister",
 	"VIRTUAL_MIDI_DEVICE_NAME": "Virtual Midi Fighter Twister",
-	"START_DELAY" : 3000,
+	"START_DELAY" : 2000,
+	"WATCHDOG_INTERVAL" : 1000,
 	"UI" : {
 		"STROB_DELAY" : 100,
-		"RECORD_COLOR" : 127,
+		"RECORD_COLOR" : 80,
 		"REVERSE_COLOR" : 0,
-		"KNOB_COLORS" : [10, 100],
-		"RESET_COLOR" : 100,
-		"STORE_COLOR" : 66,
-		"CLEAR_REC_COLOR" : 20
+		"KNOB_COLORS" : [1, 65],
+		"RESET_COLOR" : 66,
+		"STORE_COLOR" : 100,
+		"CLEAR_REC_COLOR" : 15
 	},
 	"BANK" : 4,
 	"KNOB_PER_BANK" : 16,
 	"HOLD_TO_RECORD" : true,
-	"SIDE_BTN_DICT" : [8, 10, 11, 13],
-	"SIDE_BTN_ACTION" : ["RECORD", "REVERSE", "NONE", "NONE"]
+	"SIDE_BTN_DICT" : [8, 10, 9, 12],
+	"SIDE_BTN_ACTION" : ["RECORD", "REVERSE", "PREV_BANK", "NEXT_BANK"]
 }

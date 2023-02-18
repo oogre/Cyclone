@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Knob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:22:22
-  @Last Modified time: 2023-02-17 01:24:09
+  @Last Modified time: 2023-02-18 23:03:31
 \*----------------------------------------*/
 
 const {
@@ -29,7 +29,8 @@ class Knob extends _Button.default {
     super.createHandler("changeValue");
     super.createHandler("resetValue");
     super.createHandler("storeValue");
-    this.color = (0, _tools.lerp)(knobColors[0], knobColors[1], Math.floor(id / knobPerBank) / bankLenght);
+    const mix = Math.floor(id / knobPerBank) / (bankLenght - 1);
+    this.color = (0, _tools.lerp)(knobColors[0], knobColors[1], mix);
     this._initValue = value;
     this._value = this.initValue;
     this.on("doublePressed", () => this.resetValue());
@@ -59,14 +60,14 @@ class Knob extends _Button.default {
     ;
   }
   set value(val) {
-    this._value = (val + 127) % 127;
+    this._value = (val + 128) % 128;
     super.trig("changeValue", this);
   }
   get value() {
     return this._value;
   }
   set initValue(val) {
-    this._initValue = (val + 127) % 127;
+    this._initValue = (val + 128) % 128;
   }
   get initValue() {
     return this._initValue;

@@ -2,7 +2,7 @@
   midiFighter - SideButtons.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:26:28
-  @Last Modified time: 2023-02-16 13:36:06
+  @Last Modified time: 2023-02-18 17:18:02
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -21,6 +21,8 @@ export default class SideButtons extends EventHandler {
 		super.createHandler("startRec");
 		super.createHandler("stopRec");
 		super.createHandler("reverse");
+		super.createHandler("nextBank");
+		super.createHandler("prevBank");
 		this.buttons = new Array(sideBtnDict.length).fill(0).map((_, k)=>{
 			return new Button(k)
 				.on("*", (event)=> {
@@ -37,6 +39,12 @@ export default class SideButtons extends EventHandler {
 						break;
 						case sideBtnAction.indexOf("reverse") :
 							super.trig("reverse");
+							break;
+						case sideBtnAction.indexOf("PREV_BANK") :
+							super.trig("prevBank");
+							break;
+						case sideBtnAction.indexOf("NEXT_BANK") :
+							super.trig("nextBank");
 							break;
 					}
 				})

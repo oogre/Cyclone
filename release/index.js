@@ -3,7 +3,7 @@
   midiFighter - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 14:05:42
-  @Last Modified time: 2023-02-16 12:51:20
+  @Last Modified time: 2023-02-18 15:59:22
 \*----------------------------------------*/
 "use strict";
 
@@ -12,9 +12,14 @@ var _tools = require("./common/tools.js");
 var _config = _interopRequireDefault(require("./common/config.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const {
+  PROCESS_NAME: processName,
   START_DELAY: startDelay
 } = _config.default;
+process.title = processName;
 (async () => {
   await (0, _tools.wait)(startDelay);
-  new _MidiFighterTwister.default();
-})();
+  return new _MidiFighterTwister.default();
+})().then(async mft => mft.watchdog()).catch(error => {
+  console.log(error);
+  process.exit(0);
+});

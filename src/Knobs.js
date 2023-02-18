@@ -2,7 +2,7 @@
   midiFighter - Knobs.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:23:06
-  @Last Modified time: 2023-02-16 13:20:30
+  @Last Modified time: 2023-02-18 17:22:20
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -43,15 +43,16 @@ export default class Knobs extends EventHandler {
 	}
 
 	getKnobByMidiAddress(midiNumber){
-		return this.getKnob(Math.floor(Math.abs(midiNumber) / 2))
+		return this.getKnob(Math.floor(Math.abs(midiNumber)))
 	}
 
 	map(action){
 		return this.knobs.map(action);
 	}
 
-	update(midiNumber, value){
-		const isSwitch = Math.floor(midiNumber % 2) == 0;
+	update(channel, midiNumber, value){
+		
+		const isSwitch = channel == 1;
 		const knob = this.getKnobByMidiAddress(midiNumber);
 		
 		if(isSwitch){

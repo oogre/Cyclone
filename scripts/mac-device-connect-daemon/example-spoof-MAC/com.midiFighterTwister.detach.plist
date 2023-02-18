@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>UserName</key>
+			<string>root</string>
+		<key>StandardErrorPath</key>
+			<string>/tmp/midiFighterTwister.stderr</string>
+		<key>StandardOutPath</key>
+			<string>/tmp/midiFighterTwister.stdout</string>
+		<key>Label</key>
+			<string>com.midiFighterTwister.program</string>
+		<key>ProgramArguments</key>
+			<array>
+				<string>/usr/local/bin/xpc_set_event_stream_handler</string>
+				<string>echo "bonjour";</string>
+			</array>
+		<key>EnvironmentVariables</key>
+	            <dict>
+	                <key>PATH</key>
+	                <string>/usr/local/sbin:/Users/ogre/.npm-global/bin:/Users/ogre/bin:/usr/local/bin:/opt/local/bin:/opt/local/sbin:/Applications/CMake.app/Contents/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/ogre/Documents/Processing/android/sdk/platform-tools:/Users/ogre/Library/Python/3.7/bin:/usr/local/share/dotnet:/opt/X11/bin:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/opt/ImageMagick/bin:/Applications/Wireshark.app/Contents/MacOS:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/usr/local/bin</string>
+	            </dict>
+		<key>LaunchEvents</key>
+			<dict>
+				<key>com.apple.iokit.matching</key>
+				<dict>
+					<key>com.apple.device-detach</key>
+					<dict>
+						<key>idVendor</key>
+							<integer>9600</integer>
+						<key>idProduct</key>
+							<integer>7</integer>
+						<key>IOProviderClass</key>
+							<string>IOUSBDevice</string>
+						<key>IOMatchLaunchStream</key>
+							<true/>
+						<key>IOMatchStream</key>
+							<true/>
+					</dict>
+				</dict>
+			</dict>
+	</dict>
+</plist>
