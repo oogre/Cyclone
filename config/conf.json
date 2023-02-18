@@ -1,5 +1,5 @@
 {
-	"PROCESS_NAME" : "Midi Fighter Twister",
+	"PROCESS_NAME" : "Midi_Fighter_Twister",
 	"MIDI_DEVICE_NAME": "Midi Fighter Twister",
 	"VIRTUAL_MIDI_DEVICE_NAME": "Virtual Midi Fighter Twister",
 	"START_DELAY" : 2000,

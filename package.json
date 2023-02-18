@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "./scripts/build.all.sh"
+    "build": "./scripts/build.all.sh",
+    "install": "./scripts/install.sh",
+    "uninstall": "./scripts/uninstall.sh"
   },
   "author": "",
   "license": "ISC",
