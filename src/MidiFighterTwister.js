@@ -2,13 +2,13 @@
   midiFighter - MidiFighterTwister.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:35:32
-  @Last Modified time: 2023-02-19 06:29:13
+  @Last Modified time: 2023-02-20 21:53:18
 \*----------------------------------------*/
 import midi from 'midi';
 import EventHandler from "./common/EventHandler.js";
 import Knobs from "./Knobs.js";
 import SideButtons from "./SideButtons.js";
-import Recorder from "./Recorder.js";
+// import Recorder from "./Recorder.js";
 import {wait, lerp} from "./common/tools.js";
 import conf from "./common/config.js";
 
@@ -26,7 +26,8 @@ const {
 	REVERSE_COLOR:reverseColor,
 	RESET_COLOR:resetColor,
 	STORE_COLOR:storeColor,
-	CLEAR_REC_COLOR:clearRecColor
+	CLEAR_REC_COLOR:clearRecColor,
+	TIMESCALE_COLOR:timescaleColor
 } = conf.UI;
 
 const MIDI_MESSAGE = {
@@ -44,13 +45,19 @@ export default class MidiFighterTwister {
 		this.currentBANK = 0;
 		this.sideButtons = new SideButtons()
 			.on("startRec", async event => {
-				this.recorder.start();	
+				this.knobs.map(knob => knob.startRec());
 			})
 			.on("stopRec", async event => {
-				this.recorder.stop();	
+				this.knobs.map(knob => knob.stopRec());	
 			})
-			.on("reverse", async event => {
-				this.recorder.reverse();	
+			.on("reverse", event => {
+				this.knobs.map(knob => knob.reverse());
+			})
+			.on("startTimeScale", event => {
+				this.knobs.map(knob => knob.timeScaleStart());
+			})
+			.on("stopTimeScale", event => {
+				this.knobs.map(knob => knob.timeScaleStop());
 			})
 			.on("nextBank", async event => {
 					this.currentBANK ++;
@@ -66,12 +73,16 @@ export default class MidiFighterTwister {
 			});
 
 		this.knobs = new Knobs()
-			.on("changeValue", ({target:{id, _value}}) => {
-				this.displayValue(id, _value);
-				this.sendValue(id, _value);
+			.on("changeValue", ({target:{id, _value, _timeScale}}) => {
+					this.displayValue(id, _value);
+					this.sendValue(id, _value);	
 			})
 			.on("pressed", async ({target:{id, color}}) => {
-				this.recorder.removeAll(id);
+				if(this.sideButtons.hasToReverse){
+					this.knobs.getKnob(id).reverse();
+				}else{
+					this.knobs.getKnob(id).erase();
+				}
 				this.displayColor(id, color+clearRecColor);
 				await wait(strobDebay);
 				this.displayColor(id, color);
@@ -90,14 +101,6 @@ export default class MidiFighterTwister {
 				this.displayColor(id, color);
 				this.displayValue(id, 0);
 				this.sendValue(id, 0);
-			});
-
-		this.recorder = new Recorder()
-			.plug(this.knobs)
-			.on("reverse", async ()=>{
-				this.knobs.map(({id}) => this.displayColor(id, reverseColor));
-				await wait(strobDebay);
-				this.knobs.map(({id, color}) => this.displayColor(id, color));
 			})
 			.on("startRec", async ()=>{
 				this.knobs.map(({id}) => this.displayColor(id, recordColor));
@@ -105,9 +108,29 @@ export default class MidiFighterTwister {
 			.on("stopRec", async ()=>{
 				this.knobs.map(({id, color})=> this.displayColor(id, color));
 			})
-			.on("playEvent", ({target:{knobId, value}})=>{
-				this.knobs.getKnob(knobId).valueUnrecordable = value;
+			.on("startTS", async ()=>{
+				this.knobs.map(({id}) => this.displayColor(id, timescaleColor));
+			})
+			.on("stopTS", async ()=>{
+				this.knobs.map(({id, color})=> this.displayColor(id, color));
 			});
+
+		// this.recorder = new Recorder()
+		// 	.plug(this.knobs)
+		// 	.on("reverse", async ()=>{
+		// 		this.knobs.map(({id}) => this.displayColor(id, reverseColor));
+		// 		await wait(strobDebay);
+		// 		this.knobs.map(({id, color}) => this.displayColor(id, color));
+		// 	})
+		// 	.on("startRec", async ()=>{
+		// 		this.knobs.map(({id}) => this.displayColor(id, recordColor));
+		// 	})
+		// 	.on("stopRec", async ()=>{
+		// 		this.knobs.map(({id, color})=> this.displayColor(id, color));
+		// 	})
+		// 	.on("playEvent", ({target:{knobId, value}})=>{
+		// 		this.knobs.getKnob(knobId).valueUnrecordable = value;
+		// 	});
 
 		this.inputMidi = new midi.Input()
 			.on('message', (deltaTime, [status, number, value]) => {

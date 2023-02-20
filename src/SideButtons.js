@@ -2,7 +2,7 @@
   midiFighter - SideButtons.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:26:28
-  @Last Modified time: 2023-02-18 17:18:02
+  @Last Modified time: 2023-02-20 13:18:12
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -21,8 +21,13 @@ export default class SideButtons extends EventHandler {
 		super.createHandler("startRec");
 		super.createHandler("stopRec");
 		super.createHandler("reverse");
+		super.createHandler("startTimeScale");
+		super.createHandler("stopTimeScale");
 		super.createHandler("nextBank");
 		super.createHandler("prevBank");
+		this.hasToReverse = false;
+		this.hasToTimeScale = false;
+
 		this.buttons = new Array(sideBtnDict.length).fill(0).map((_, k)=>{
 			return new Button(k)
 				.on("*", (event)=> {
@@ -31,14 +36,19 @@ export default class SideButtons extends EventHandler {
 				.on("pressed", ({target:{id, _isActive}}) => {
 					switch(id){
 						case sideBtnAction.indexOf("RECORD") :
-							if(holdToRecord || _isActive){
+							if(this.hasToReverse){
+								super.trig("reverse");
+							}
+							else if(holdToRecord || _isActive){
 								super.trig("startRec");
-							}else{
+							}
+							else
+							{
 								super.trig("stopRec");
 							}
 						break;
-						case sideBtnAction.indexOf("reverse") :
-							super.trig("reverse");
+						case sideBtnAction.indexOf("REVERSE") :
+							this.hasToReverse = true;
 							break;
 						case sideBtnAction.indexOf("PREV_BANK") :
 							super.trig("prevBank");
@@ -46,11 +56,26 @@ export default class SideButtons extends EventHandler {
 						case sideBtnAction.indexOf("NEXT_BANK") :
 							super.trig("nextBank");
 							break;
+						case sideBtnAction.indexOf("TIME_SCALE") : 
+							super.trig("startTimeScale");
+						break;
 					}
 				})
 				.on("released", ({target:{id}}) => {
-					if(holdToRecord && id == sideBtnAction.indexOf("RECORD")) {
-						super.trig("stopRec");
+					switch(id){
+						case sideBtnAction.indexOf("RECORD") :
+							if(this.hasToReverse){
+
+							} else if(holdToRecord) {
+								super.trig("stopRec");
+							}
+						break;
+						case sideBtnAction.indexOf("REVERSE") :
+							this.hasToReverse = false;
+							break;
+						case sideBtnAction.indexOf("TIME_SCALE") : 
+							super.trig("stopTimeScale");
+						break;
 					}
 				});
 		});

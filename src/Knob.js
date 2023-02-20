@@ -2,7 +2,7 @@
   midiFighter - Knob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:22:22
-  @Last Modified time: 2023-02-18 23:03:31
+  @Last Modified time: 2023-02-20 21:42:57
 \*----------------------------------------*/
 
 import Button from "./Button.js";
@@ -31,7 +31,6 @@ export default class Knob extends Button {
 		this._value = this.initValue;
 		this.on("doublePressed", () => this.resetValue());
 		this.on("longPressed", () => this.resetInitValue());
-		this.enableRec = true;
 		setTimeout(()=>super.trig("created", this), 20);
 		setTimeout(()=>super.trig("changeValue", this), 20);
 	}
@@ -44,22 +43,6 @@ export default class Knob extends Button {
 		this.value -= step;
 	}
 	
-	resetValue(){
-		this.value = this.initValue;
-		super.trig("resetValue", this);
-	}
-
-	resetInitValue(){
-		this.initValue = this.value;
-		super.trig("storeValue", this);
-	}
-
-	set valueUnrecordable(val){
-		this.enableRec = false;
-		this.value = val;
-		this.enableRec = true;;
-	}
-
 	set value(val){
 		this._value = (val + 128) % 128;
 		super.trig("changeValue", this);
@@ -69,6 +52,16 @@ export default class Knob extends Button {
 		return this._value;
 	}
 
+	resetValue(){
+		this.value = this.initValue;
+		super.trig("resetValue", this);
+	}
+
+	resetInitValue(){
+		this.initValue = this.value;
+		super.trig("storeValue", this);
+	}
+	
 	set initValue(val){
 		this._initValue = (val + 128) % 128;
 	}

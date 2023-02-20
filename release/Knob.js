@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Knob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:22:22
-  @Last Modified time: 2023-02-18 23:03:31
+  @Last Modified time: 2023-02-20 21:42:57
 \*----------------------------------------*/
 
 const {
@@ -35,7 +35,6 @@ class Knob extends _Button.default {
     this._value = this.initValue;
     this.on("doublePressed", () => this.resetValue());
     this.on("longPressed", () => this.resetInitValue());
-    this.enableRec = true;
     setTimeout(() => super.trig("created", this), 20);
     setTimeout(() => super.trig("changeValue", this), 20);
   }
@@ -45,6 +44,13 @@ class Knob extends _Button.default {
   decrease(step = 1) {
     this.value -= step;
   }
+  set value(val) {
+    this._value = (val + 128) % 128;
+    super.trig("changeValue", this);
+  }
+  get value() {
+    return this._value;
+  }
   resetValue() {
     this.value = this.initValue;
     super.trig("resetValue", this);
@@ -52,19 +58,6 @@ class Knob extends _Button.default {
   resetInitValue() {
     this.initValue = this.value;
     super.trig("storeValue", this);
-  }
-  set valueUnrecordable(val) {
-    this.enableRec = false;
-    this.value = val;
-    this.enableRec = true;
-    ;
-  }
-  set value(val) {
-    this._value = (val + 128) % 128;
-    super.trig("changeValue", this);
-  }
-  get value() {
-    return this._value;
   }
   set initValue(val) {
     this._initValue = (val + 128) % 128;

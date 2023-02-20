@@ -5,14 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _EventHandler = _interopRequireDefault(require("./common/EventHandler.js"));
-var _Knob = _interopRequireDefault(require("./Knob.js"));
+var _RecordableKnob = _interopRequireDefault(require("./RecordableKnob.js"));
 var _config = _interopRequireDefault(require("./common/config.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /*----------------------------------------*\
   midiFighter - Knobs.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:23:06
-  @Last Modified time: 2023-02-18 17:22:20
+  @Last Modified time: 2023-02-20 21:52:47
 \*----------------------------------------*/
 
 const {
@@ -33,8 +33,12 @@ class Knobs extends _EventHandler.default {
     super.createHandler("resetValue");
     super.createHandler("storeValue");
     super.createHandler("created");
+    super.createHandler("startRec");
+    super.createHandler("stopRec");
+    super.createHandler("startTS");
+    super.createHandler("stopTS");
     this.knobs = new Array(knobPerBank * bankLenght).fill(0).map((_, k) => {
-      return new _Knob.default(k).on("*", event => {
+      return new _RecordableKnob.default(k).on("*", event => {
         super.trig(event.eventName, event.target);
       });
     });

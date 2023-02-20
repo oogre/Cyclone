@@ -2,11 +2,11 @@
   midiFighter - Knobs.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:23:06
-  @Last Modified time: 2023-02-18 17:22:20
+  @Last Modified time: 2023-02-20 21:52:47
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
-import Knob from "./Knob.js";
+import RecordableKnob from "./RecordableKnob.js";
 import conf from "./common/config.js";
 
 const {
@@ -29,8 +29,13 @@ export default class Knobs extends EventHandler {
 		super.createHandler("resetValue");
 		super.createHandler("storeValue");
 		super.createHandler("created");
+		super.createHandler("startRec");
+		super.createHandler("stopRec");
+		super.createHandler("startTS");
+		super.createHandler("stopTS");
+		
 		this.knobs = new Array(knobPerBank * bankLenght).fill(0).map((_, k)=>{
-			return new Knob(k)
+			return new RecordableKnob(k)
 				.on("*", (event)=> {
 					super.trig(event.eventName, event.target);
 				});
@@ -51,7 +56,6 @@ export default class Knobs extends EventHandler {
 	}
 
 	update(channel, midiNumber, value){
-		
 		const isSwitch = channel == 1;
 		const knob = this.getKnobByMidiAddress(midiNumber);
 		
