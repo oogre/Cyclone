@@ -2,7 +2,7 @@
   midiFighter - MidiFighterTwister.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:35:32
-  @Last Modified time: 2023-02-18 23:32:27
+  @Last Modified time: 2023-02-19 06:29:13
 \*----------------------------------------*/
 import midi from 'midi';
 import EventHandler from "./common/EventHandler.js";
@@ -11,7 +11,6 @@ import SideButtons from "./SideButtons.js";
 import Recorder from "./Recorder.js";
 import {wait, lerp} from "./common/tools.js";
 import conf from "./common/config.js";
-
 
 const {
 	MIDI_DEVICE_NAME:midiName, 
@@ -40,7 +39,6 @@ const MIDI_MESSAGE = {
 	PITCH_BEND : 0xE0
 };
 
-
 export default class MidiFighterTwister {
 	constructor(){
 		this.currentBANK = 0;
@@ -57,53 +55,55 @@ export default class MidiFighterTwister {
 			.on("nextBank", async event => {
 					this.currentBANK ++;
 					this.currentBANK %= bankLength;
-					this.knobs.map(({id, color}) => this.changeColor(id, color));
-					this.knobs.map(({id, _value}) => this.changeValue(id, _value));
+					this.knobs.map(({id, color}) => this.displayColor(id, color));
+					this.knobs.map(({id, _value}) => this.displayValue(id, _value));
 			})
 			.on("prevBank", async event => {
 					this.currentBANK += bankLength-1;
 					this.currentBANK %= bankLength;
-					this.knobs.map(({id, color}) => this.changeColor(id, color));
-					this.knobs.map(({id, _value}) => this.changeValue(id, _value));
+					this.knobs.map(({id, color}) => this.displayColor(id, color));
+					this.knobs.map(({id, _value}) => this.displayValue(id, _value));
 			});
 
 		this.knobs = new Knobs()
 			.on("changeValue", ({target:{id, _value}}) => {
-				this.changeValue(id, _value);
+				this.displayValue(id, _value);
+				this.sendValue(id, _value);
 			})
 			.on("pressed", async ({target:{id, color}}) => {
 				this.recorder.removeAll(id);
-				this.changeColor(id, color+clearRecColor);
+				this.displayColor(id, color+clearRecColor);
 				await wait(strobDebay);
-				this.changeColor(id, color);
+				this.displayColor(id, color);
 			})
 			.on("storeValue", async ({target:{id, color}}) => {
-				this.changeColor(id, storeColor);
+				this.displayColor(id, storeColor);
 				await wait(strobDebay);
-				this.changeColor(id, color);
+				this.displayColor(id, color);
 			})
 			.on("resetValue", async ({target:{id, color}}) => {
-				this.changeColor(id, resetColor);
+				this.displayColor(id, resetColor);
 				await wait(strobDebay);
-				this.changeColor(id, color);
+				this.displayColor(id, color);
 			})
 			.on("created", ({target:{id, color}}) => {
-				this.changeColor(id, color);
-				this.changeValue(id, 64);
+				this.displayColor(id, color);
+				this.displayValue(id, 0);
+				this.sendValue(id, 0);
 			});
 
 		this.recorder = new Recorder()
 			.plug(this.knobs)
 			.on("reverse", async ()=>{
-				this.knobs.map(({id}) => this.changeColor(id, reverseColor));
+				this.knobs.map(({id}) => this.displayColor(id, reverseColor));
 				await wait(strobDebay);
-				this.knobs.map(({id, color}) => this.changeColor(id, color));
+				this.knobs.map(({id, color}) => this.displayColor(id, color));
 			})
 			.on("startRec", async ()=>{
-				this.knobs.map(({id}) => this.changeColor(id, recordColor));
+				this.knobs.map(({id}) => this.displayColor(id, recordColor));
 			})
 			.on("stopRec", async ()=>{
-				this.knobs.map(({id, color})=> this.changeColor(id, color));
+				this.knobs.map(({id, color})=> this.displayColor(id, color));
 			})
 			.on("playEvent", ({target:{knobId, value}})=>{
 				this.knobs.getKnob(knobId).valueUnrecordable = value;
@@ -133,17 +133,17 @@ export default class MidiFighterTwister {
 		this.outputDisplay.openPort(outID);
 		this.outputVirtual.openVirtualPort(midiOutName);
 
-		this.startAnim()	
+		this.welcomeAnim();
 	}
 
-	async startAnim(){
+	async welcomeAnim(){
 		this.knobs.map(async ({id, color}, k)=>{
-			this.changeIntensity(id, 0);
-			this.changeColor(id, color);
+			this.displayIntensity(id, 0);
+			this.displayColor(id, color);
 			await wait(k * 150);
 			(async()=>{
 				for(let j = 0 ; j <= 1 ; j += 0.02){
-					this.changeIntensity(id, j);
+					this.displayIntensity(id, j);
 					await wait(5)
 				}
 			})();
@@ -156,26 +156,30 @@ export default class MidiFighterTwister {
 			new Array(this.outputDisplay.getPortCount()).fill(0).map((_, id)=>this.outputDisplay.getPortName(id)).findIndex(value => midiName == value)
 		];
 	}
+
 	hasToBeDisplayed(knobID){
 		const minKobID = this.currentBANK * knobPerBank;
 		const maxKobID = this.currentBANK * knobPerBank + knobPerBank;
 		return knobID >= minKobID &&  knobID < maxKobID;
 	}
-	changeValue(knobID, value){
+
+	displayValue(knobID, value){
 		if(this.hasToBeDisplayed(knobID)){
 			this.sendCC(this.outputDisplay, 0x00, knobID - knobPerBank * this.currentBANK, value);
 		}
-
-		this.sendCC(this.outputVirtual, 0x00, knobID, value);
-		
 	}
-	changeColor(knobID, color){
+
+	sendValue(knobID, value){
+		this.sendCC(this.outputVirtual, 0x00, knobID, value);
+	}
+
+	displayColor(knobID, color){
 		if(this.hasToBeDisplayed(knobID)){
 			this.sendCC(this.outputDisplay, 0x01, knobID - knobPerBank * this.currentBANK, color % 128);
 		}
 	}
 
-	changeIntensity(knobID, intensity){
+	displayIntensity(knobID, intensity){
 		intensity = Math.min(Math.max(intensity, 0), 1);
 		if(this.hasToBeDisplayed(knobID)){
 			this.sendCC(this.outputDisplay, 0x02, knobID - knobPerBank * this.currentBANK, lerp(17, 49	, intensity));
