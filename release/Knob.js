@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Knob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:22:22
-  @Last Modified time: 2023-02-20 21:42:57
+  @Last Modified time: 2023-02-20 22:17:23
 \*----------------------------------------*/
 
 const {
@@ -24,7 +24,8 @@ const {
 } = _config.default.UI;
 class Knob extends _Button.default {
   constructor(id, value = 0) {
-    super(id);
+    super();
+    this.id = id;
     super.createHandler("created");
     super.createHandler("changeValue");
     super.createHandler("resetValue");

@@ -10,20 +10,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Button.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:13:39
-  @Last Modified time: 2023-02-15 19:51:01
+  @Last Modified time: 2023-02-21 00:32:00
 \*----------------------------------------*/
 
 const LONG_PRESS_TIMEOUT = 333;
 const DOUBLE_PRESS_TIMEOUT = 333;
 class Button extends _EventHandler.default {
   constructor(id) {
-    super();
+    super(id);
     super.createHandler("pressed");
     super.createHandler("released");
     super.createHandler("longPressed");
     super.createHandler("doublePressed");
-    this._counter = 0;
     this.id = id;
+    this._counter = 0;
     this._isActive = false;
     this._isPressed = false;
     this._wasPressed = false;
@@ -63,5 +63,6 @@ class Button extends _EventHandler.default {
   get pressed() {
     return this._isPressed;
   }
+  static PRESS_VALUE = 127;
 }
 exports.default = Button;

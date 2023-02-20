@@ -2,7 +2,7 @@
   midiFighter - Knob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:22:22
-  @Last Modified time: 2023-02-20 21:42:57
+  @Last Modified time: 2023-02-20 22:17:23
 \*----------------------------------------*/
 
 import Button from "./Button.js";
@@ -20,7 +20,8 @@ const {
 
 export default class Knob extends Button {
 	constructor(id, value = 0){
-		super(id);
+		super();
+		this.id = id;
 		super.createHandler("created");
 		super.createHandler("changeValue");
 		super.createHandler("resetValue");
@@ -61,7 +62,7 @@ export default class Knob extends Button {
 		this.initValue = this.value;
 		super.trig("storeValue", this);
 	}
-	
+
 	set initValue(val){
 		this._initValue = (val + 128) % 128;
 	}

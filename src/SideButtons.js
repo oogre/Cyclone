@@ -2,7 +2,7 @@
   midiFighter - SideButtons.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:26:28
-  @Last Modified time: 2023-02-20 13:18:12
+  @Last Modified time: 2023-02-21 00:42:29
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -34,6 +34,7 @@ export default class SideButtons extends EventHandler {
 					super.trig(event.eventName, event.target);
 				})
 				.on("pressed", ({target:{id, _isActive}}) => {
+
 					switch(id){
 						case sideBtnAction.indexOf("RECORD") :
 							if(this.hasToReverse){

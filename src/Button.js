@@ -2,7 +2,7 @@
   midiFighter - Button.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:13:39
-  @Last Modified time: 2023-02-15 19:51:01
+  @Last Modified time: 2023-02-21 00:32:00
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -12,13 +12,13 @@ const DOUBLE_PRESS_TIMEOUT = 333;
 
 export default class Button extends EventHandler {
 	constructor(id){
-		super();
+		super(id);
 		super.createHandler("pressed");
 		super.createHandler("released");
 		super.createHandler("longPressed");
 		super.createHandler("doublePressed");
-		this._counter = 0;
 		this.id = id;
+		this._counter = 0;
 		this._isActive = false;
 		this._isPressed = false;
 		this._wasPressed = false;
@@ -62,4 +62,6 @@ export default class Button extends EventHandler {
 	get pressed(){
 		return this._isPressed;
 	}
+
+	static PRESS_VALUE = 127;
 }
