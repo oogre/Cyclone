@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^9.4.0",
-    "dialog-node": "^0.2.1",
     "fs-extra": "^10.1.0",
     "midi": "^2.0.0",
     "node-file-dialog": "^1.0.3",
