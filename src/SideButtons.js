@@ -2,7 +2,7 @@
   midiFighter - SideButtons.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:26:28
-  @Last Modified time: 2023-02-21 00:42:29
+  @Last Modified time: 2023-02-21 23:32:48
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -19,63 +19,62 @@ export default class SideButtons extends EventHandler {
 	constructor(){
 		super();
 		super.createHandler("startRec");
-		super.createHandler("stopRec");
-		super.createHandler("reverse");
 		super.createHandler("startTimeScale");
-		super.createHandler("stopTimeScale");
+		super.createHandler("startPlayMode");
+		super.createHandler("stop");
+		
+		
 		super.createHandler("nextBank");
 		super.createHandler("prevBank");
-		this.hasToReverse = false;
-		this.hasToTimeScale = false;
+		this.started = false;
 
 		this.buttons = new Array(sideBtnDict.length).fill(0).map((_, k)=>{
 			return new Button(k)
 				.on("*", (event)=> {
 					super.trig(event.eventName, event.target);
 				})
-				.on("pressed", ({target:{id, _isActive}}) => {
-
+				.on("pressed", ({target:{id}}) => {
 					switch(id){
-						case sideBtnAction.indexOf("RECORD") :
-							if(this.hasToReverse){
-								super.trig("reverse");
-							}
-							else if(holdToRecord || _isActive){
-								super.trig("startRec");
-							}
-							else
-							{
-								super.trig("stopRec");
-							}
-						break;
-						case sideBtnAction.indexOf("REVERSE") :
-							this.hasToReverse = true;
-							break;
 						case sideBtnAction.indexOf("PREV_BANK") :
 							super.trig("prevBank");
 							break;
 						case sideBtnAction.indexOf("NEXT_BANK") :
 							super.trig("nextBank");
 							break;
+						case sideBtnAction.indexOf("RECORD") :
+						case sideBtnAction.indexOf("PLAY_MODE") :
 						case sideBtnAction.indexOf("TIME_SCALE") : 
-							super.trig("startTimeScale");
+							if(holdToRecord || !this.started){
+								if(id == sideBtnAction.indexOf("RECORD"))
+									super.trig("startRec");
+								else if(id == sideBtnAction.indexOf("PLAY_MODE"))
+									super.trig("startPlayMode");
+								else if(id == sideBtnAction.indexOf("TIME_SCALE"))
+									super.trig("startTimeScale");
+								this.started = true;
+							}
+							else
+							{
+								this.started = false;
+								super.trig("stop");
+							}
 						break;
 					}
 				})
 				.on("released", ({target:{id}}) => {
 					switch(id){
 						case sideBtnAction.indexOf("RECORD") :
-							if(this.hasToReverse){
-
-							} else if(holdToRecord) {
-								super.trig("stopRec");
+						case sideBtnAction.indexOf("TIME_SCALE") : 
+						case sideBtnAction.indexOf("PLAY_MODE") : 
+							if(holdToRecord) {
+								super.trig("stop");
 							}
 						break;
 						case sideBtnAction.indexOf("REVERSE") :
 							this.hasToReverse = false;
 							break;
 						case sideBtnAction.indexOf("TIME_SCALE") : 
-							super.trig("stopTimeScale");
+							super.trig("stop");
 						break;
 					}
 				});

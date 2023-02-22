@@ -2,6 +2,7 @@
 	"PROCESS_NAME" : "Midi_Fighter_Twister",
 	"MIDI_DEVICE_NAME": "Midi Fighter Twister",
 	"VIRTUAL_MIDI_DEVICE_NAME": "Virtual Midi Fighter Twister",
+	"VIRTUAL_MIDI_CONTROL_CHANNEL": 0,
 	"START_DELAY" : 2000,
 	"WATCHDOG_INTERVAL" : 1000,
 	"UI" : {
@@ -16,7 +17,7 @@
 	},
 	"BANK" : 4,
 	"KNOB_PER_BANK" : 16,
-	"HOLD_TO_RECORD" : true,
+	"HOLD_TO_RECORD" : false,
 	"SIDE_BTN_DICT" : [8, 10, 9, 12, 13],
-	"SIDE_BTN_ACTION" : ["RECORD", "REVERSE", "PREV_BANK", "NEXT_BANK", "TIME_SCALE"]
+	"SIDE_BTN_ACTION" : ["RECORD", "PLAY_MODE", "PREV_BANK", "NEXT_BANK", "TIME_SCALE"]
 }

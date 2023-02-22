@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Display.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-20 22:17:43
-  @Last Modified time: 2023-02-21 00:26:02
+  @Last Modified time: 2023-02-22 01:29:56
 \*----------------------------------------*/
 
 const {
@@ -60,6 +60,31 @@ class Display {
           await (0, _tools.wait)(5);
         }
         this.stateColor = color;
+      },
+      playMode: {
+        NORMAL: async (step = 4) => {
+          for (let j = 0; j < 128; j++) {
+            this.value = j;
+            await (0, _tools.wait)(step);
+          }
+        },
+        REVERSE: async (step = 4) => {
+          for (let j = 127; j >= 0; j--) {
+            this.value = j;
+            await (0, _tools.wait)(step);
+          }
+        },
+        PING_PONG: async (step = 4) => {
+          await this.anims.playMode.NORMAL(2);
+          await (0, _tools.wait)(step);
+          await this.anims.playMode.REVERSE(2);
+        },
+        RANDOM: async (step = 4) => {
+          for (let j = 0; j < 128; j++) {
+            this.value = Math.floor(Math.random() * 128);
+            await (0, _tools.wait)(step);
+          }
+        }
       }
     };
   }
@@ -82,10 +107,20 @@ class Display {
     intensity = (0, _tools.lerp)(Display.INTENSITY_MIN, Display.INTENSITY_MAX, Math.min(Math.max(intensity, 0), 1));
     this.send(Display.INTENSITY_CHANNEL, intensity);
   }
+  displayStrob(intensity) {
+    intensity = (0, _tools.lerp)(Display.STROB_MIN, Display.STROB_MAX, Math.min(Math.max(intensity, 0), 1));
+    this.send(Display.INTENSITY_CHANNEL, intensity);
+  }
+  displayIntensity(intensity) {
+    intensity = (0, _tools.lerp)(Display.INTENSITY_MIN, Display.INTENSITY_MAX, Math.min(Math.max(intensity, 0), 1));
+    this.send(Display.INTENSITY_CHANNEL, intensity);
+  }
   static RING_CHANNEL = 0x00;
   static COLOR_CHANNEL = 0x01;
   static INTENSITY_CHANNEL = 0x02;
   static INTENSITY_MIN = 17;
-  static INTENSITY_MAX = 49;
+  static INTENSITY_MAX = 48;
+  static STROB_MIN = 1;
+  static STROB_MAX = 16;
 }
 exports.default = Display;

@@ -10,99 +10,63 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /*----------------------------------------*\
   midiFighter - Recorder.js
   @author Evrard Vincent (vincent@ogre.be)
-  @Date:   2023-02-15 19:18:25
-  @Last Modified time: 2023-02-17 01:30:46
+  @Date:   2023-02-21 13:29:27
+  @Last Modified time: 2023-02-21 15:41:49
 \*----------------------------------------*/
 
 class Recorder extends _EventHandler.default {
-  constructor() {
+  constructor(value) {
     super();
-    super.createHandler("reverse");
-    super.createHandler("startRec");
-    super.createHandler("stopRec");
-    super.createHandler("playEvent");
-    this.recordHandler = event => this.record(event);
+    super.createHandler("newRecord");
+    this.enableRec = true;
     this.records = [];
+    this.value = value;
   }
-  plug(elems) {
-    this.elements = elems;
-    return this;
+  startRecord() {
+    if (!this.value) return;
+    this.records = [this.entry("start")];
+    this.record(this.entry("change"));
+    this.value.on("change", this.record.bind(this));
   }
-  start() {
-    this.records.push({
-      events: [{
-        eventName: "start",
-        time: new Date().getTime(),
-        target: {}
-      }]
+  stopRecord() {
+    if (!this.value) return;
+    this.value.off("change", this.record.bind(this));
+    this.record(this.entry("change"));
+    this.records = this.records.filter(({
+      eventName
+    }) => eventName != "start");
+    if (this.records.length <= 2) {
+      return false;
+    }
+    const record = this.records.map(({
+      delay,
+      value
+    }) => {
+      return {
+        delay,
+        value
+      };
     });
-    this.elements.on("changeValue", this.recordHandler);
-    super.trig("startRec");
-  }
-  reverse() {
-    this.records = this.records.map(rec => {
-      rec.events = rec.events.reverse();
-      return rec;
+    super.trig("newRecord", {
+      record
     });
-    super.trig("reverse");
   }
-  stop() {
-    this.elements.off("changeValue", this.recordHandler);
-    this.record({
-      eventName: "stop",
+  entry(name) {
+    return {
+      eventName: name,
       time: new Date().getTime(),
-      target: {}
-    });
-    super.trig("stopRec");
-    this.play(this.records.length - 1);
-  }
-  removeAll(id) {
-    this.records = this.records.map(rec => {
-      rec.events = rec.events.filter(({
-        target
-      }) => target.id != id);
-      return rec;
-    });
+      target: this.value
+    };
   }
   record(event) {
-    if (event.target.enableRec) {
-      const current = this.records[this.records.length - 1];
-      event.delay = event.time - current.events[current.events.length - 1].time;
-      current.events.push(event);
-    }
-  }
-  async play(__ID__) {
-    try {
-      if (__ID__ >= this.records.length) return;
-      let {
-        events
-      } = this.records[__ID__];
-      if (events.length <= 1) {
-        this.records.splice(__ID__, 1);
-        return;
-      }
-      const {
-        eventName,
-        target: {
-          id,
-          _value
-        },
-        delay
-      } = events[0];
-      switch (eventName) {
-        case "changeValue":
-          super.trig("playEvent", {
-            knobId: id,
-            value: _value
-          });
-          break;
-      }
-      events.push(events.shift());
-      await (0, _tools.wait)(events[0].delay);
-      await this.play(__ID__);
-    } catch (error) {
-      this.records.splice(__ID__, 1);
-    }
+    const prevEvt = this.records[this.records.length - 1];
+    if (prevEvt.value == event.target._value) return;
+    this.records.push({
+      eventName: event.eventName,
+      time: event.time,
+      delay: event.time - prevEvt.time,
+      value: event.target._value
+    });
   }
 }
 exports.default = Recorder;

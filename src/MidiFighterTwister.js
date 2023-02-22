@@ -2,14 +2,12 @@
   midiFighter - MidiFighterTwister.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:35:32
-  @Last Modified time: 2023-02-21 00:54:31
+  @Last Modified time: 2023-02-22 01:43:10
 \*----------------------------------------*/
 import midi from 'midi';
-import EventHandler from "./common/EventHandler.js";
-import Knobs from "./Knobs.js";
 import SideButtons from "./SideButtons.js";
 import MultiFuncKnob from "./MultiFuncKnob.js";
-import {wait, lerp} from "./common/tools.js";
+import {wait} from "./common/tools.js";
 import conf from "./common/config.js";
 
 const {
@@ -19,16 +17,6 @@ const {
 	KNOB_PER_BANK:knobPerBank,
 	BANK:bankLength
 } = conf;
-
-const {
-	STROB_DELAY:strobDebay,
-	RECORD_COLOR:recordColor,
-	REVERSE_COLOR:reverseColor,
-	RESET_COLOR:resetColor,
-	STORE_COLOR:storeColor,
-	CLEAR_REC_COLOR:clearRecColor,
-	TIMESCALE_COLOR:timescaleColor
-} = conf.UI;
 
 const MIDI_MESSAGE = {
 	NOTE_OFF : 0x80,
@@ -45,31 +33,26 @@ export default class MidiFighterTwister {
 
 		this.sideButtons = new SideButtons()
 			.on("startRec", async event => {
-				console.log("startRec");
 				this.knobs.map(knob=>knob.mode = MultiFuncKnob.MODES.RECORD)
-			})
-			.on("stopRec", async event => {
-				console.log("stopRec");
-				this.knobs.map(knob=>knob.mode = MultiFuncKnob.MODES.DEFAULT)
 			})
 			.on("startTimeScale", event => {
 				this.knobs.map(knob=>knob.mode = MultiFuncKnob.MODES.TIMESCALE)
 			})
-			.on("stopTimeScale", event => {
-				this.knobs.map(knob=>knob.mode = MultiFuncKnob.MODES.DEFAULT)
+			.on("startPlayMode", event => {
+				this.knobs.map(knob=>knob.mode = MultiFuncKnob.MODES.PLAYMODE)
 			})
+			.on("stop", async event => {
+				this.knobs.map(knob=>knob.mode = MultiFuncKnob.MODES.DEFAULT)
+			});
 			
-
 		this.inputMidi = new midi.Input()
 			.on('message', (deltaTime, [status, number, value]) => {
 				const [type, channel] = [status & 0xF0 , status & 0x0F];
-				console.log(`c: ${channel} n: ${number} v: ${value} d: ${deltaTime}`);
+				// console.log(`c: ${channel} n: ${number} v: ${value} d: ${deltaTime}`);
 				switch(type){
 				case MIDI_MESSAGE.CONTROL_CHANGE : 
 					if(channel == 0 || channel == 1){
-
 						this.knobs[number].update(channel, value)
-						// this.knobs.update(channel, number +knobPerBank * this.currentBANK, value, deltaTime);			
 					}else if(channel == 3){
 						this.sideButtons.update(number, value, deltaTime);			
 					}
@@ -86,15 +69,18 @@ export default class MidiFighterTwister {
 		this.outputDisplay.openPort(outID);
 		this.outputVirtual.openVirtualPort(midiOutName);
 
-
 		this.knobs = new Array(knobPerBank)
 			.fill(0)
-			.map((_, id) => new MultiFuncKnob(id, 0, this.display.bind(this)));
+			.map((_, id) => new MultiFuncKnob(id, 0, this.display.bind(this), this.virtualMidi.bind(this)));
 		this.knobs.map(knob=> knob.mode = MultiFuncKnob.MODES.DEFAULT);
 	}
 
 	display(channel, id, value){
 		this.outputDisplay.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE|channel, id, value]);	
+	}
+
+	virtualMidi(channel, id, value){
+		this.outputVirtual.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE|channel, id, value]);	
 	}
 
 	getMidiFighterTwisterID () {
@@ -107,7 +93,7 @@ export default class MidiFighterTwister {
 	async watchdog(){
 		const [inID, outID] = this.getMidiFighterTwisterID();
 		if(inID < 0 || outID < 0)throw new Error(`MIDI_DEVICE (${midiName}) HAS BEEN DISCONNECTED`);
-		await wait(1000);
+		await wait(watchdogInterval);
 		return this.watchdog();
 	}
 }
