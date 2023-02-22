@@ -2,7 +2,7 @@
   midiFighter - SideButtons.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:26:28
-  @Last Modified time: 2023-02-21 23:32:48
+  @Last Modified time: 2023-02-22 14:14:38
 \*----------------------------------------*/
 
 import EventHandler from "./common/EventHandler.js";
@@ -22,6 +22,7 @@ export default class SideButtons extends EventHandler {
 		super.createHandler("startTimeScale");
 		super.createHandler("startPlayMode");
 		super.createHandler("stop");
+		super.createHandler("save");
 		
 		
 		super.createHandler("nextBank");
@@ -76,6 +77,11 @@ export default class SideButtons extends EventHandler {
 						case sideBtnAction.indexOf("TIME_SCALE") : 
 							super.trig("stop");
 						break;
+						case sideBtnAction.indexOf("SAVE") : 
+							super.trig("save");
+						break;
+
+
 					}
 				});
 		});

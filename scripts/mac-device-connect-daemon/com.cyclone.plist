@@ -5,15 +5,15 @@
 		<key>UserName</key>
 			<string>root</string>
 		<key>StandardErrorPath</key>
-			<string>/tmp/midiFighterTwister.stderr</string>
+			<string>/tmp/cyclone.stderr</string>
 		<key>StandardOutPath</key>
-			<string>/tmp/midiFighterTwister.stdout</string>
+			<string>/tmp/cyclone.stdout</string>
 		<key>Label</key>
-			<string>com.midiFighterTwister.program</string>
+			<string>com.cyclone.program</string>
 		<key>ProgramArguments</key>
 			<array>
 				<string>/usr/local/bin/xpc_set_event_stream_handler</string>
-				<string>/usr/local/bin/TWISTER</string>
+				<string>/usr/local/bin/cyclone</string>
 			</array>
 		<key>EnvironmentVariables</key>
 	            <dict>

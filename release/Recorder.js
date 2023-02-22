@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Recorder.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 13:29:27
-  @Last Modified time: 2023-02-21 15:41:49
+  @Last Modified time: 2023-02-22 14:07:47
 \*----------------------------------------*/
 
 class Recorder extends _EventHandler.default {

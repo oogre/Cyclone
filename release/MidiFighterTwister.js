@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - MidiFighterTwister.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:35:32
-  @Last Modified time: 2023-02-22 01:43:10
+  @Last Modified time: 2023-02-22 19:11:30
 \*----------------------------------------*/
 
 const {
@@ -43,6 +43,13 @@ class MidiFighterTwister {
       this.knobs.map(knob => knob.mode = _MultiFuncKnob.default.MODES.PLAYMODE);
     }).on("stop", async event => {
       this.knobs.map(knob => knob.mode = _MultiFuncKnob.default.MODES.DEFAULT);
+    }).on("save", async event => {
+      const data = JSON.stringify(this.knobs.map(knob => knob.toObject()));
+      try {
+        await (0, _tools.save)(data);
+      } catch (error) {
+        console.log(error);
+      }
     });
     this.inputMidi = new _midi.default.Input().on('message', (deltaTime, [status, number, value]) => {
       const [type, channel] = [status & 0xF0, status & 0x0F];
@@ -57,12 +64,23 @@ class MidiFighterTwister {
           break;
       }
     });
+    this.inputVirtual = new _midi.default.Input().on('message', (deltaTime, [status, number, value]) => {
+      const [type, channel] = [status & 0xF0, status & 0x0F];
+      switch (type) {
+        case MIDI_MESSAGE.CONTROL_CHANGE:
+          (0, _tools.load)(`${_config.default.directory}/cc.${channel}.${number}.cycl`).then((confs, id) => {
+            confs.map(conf => this.knobs[conf.id].setup(conf));
+          });
+          break;
+      }
+    });
     this.outputDisplay = new _midi.default.Output();
     this.outputVirtual = new _midi.default.Output();
     const [inID, outID] = this.getMidiFighterTwisterID();
     if (inID < 0 || outID < 0) throw new Error(`MIDI_DEVICE (${midiName}) not found`);
     this.inputMidi.openPort(inID);
     this.outputDisplay.openPort(outID);
+    this.inputVirtual.openVirtualPort(midiOutName);
     this.outputVirtual.openVirtualPort(midiOutName);
     this.knobs = new Array(knobPerBank).fill(0).map((_, id) => new _MultiFuncKnob.default(id, 0, this.display.bind(this), this.virtualMidi.bind(this)));
     this.knobs.map(knob => knob.mode = _MultiFuncKnob.default.MODES.DEFAULT);

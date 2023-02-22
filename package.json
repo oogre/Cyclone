@@ -1,5 +1,5 @@
 {
-  "name": "midifighter",
+  "name": "cyclone",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,13 +8,15 @@
     "install": "./scripts/install.sh",
     "uninstall": "./scripts/uninstall.sh"
   },
-  "author": "",
+  "author": "Vincent Evrard <vincent@ogre.be>",
   "license": "ISC",
   "dependencies": {
-    "midi": "^2.0.0",
-    "underscore": "^1.13.4",
     "commander": "^9.4.0",
-    "fs-extra": "^10.1.0"
+    "dialog-node": "^0.2.1",
+    "fs-extra": "^10.1.0",
+    "midi": "^2.0.0",
+    "node-file-dialog": "^1.0.3",
+    "underscore": "^1.13.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.7",

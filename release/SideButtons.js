@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - SideButtons.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 18:26:28
-  @Last Modified time: 2023-02-21 23:32:48
+  @Last Modified time: 2023-02-22 14:14:38
 \*----------------------------------------*/
 
 const {
@@ -27,6 +27,7 @@ class SideButtons extends _EventHandler.default {
     super.createHandler("startTimeScale");
     super.createHandler("startPlayMode");
     super.createHandler("stop");
+    super.createHandler("save");
     super.createHandler("nextBank");
     super.createHandler("prevBank");
     this.started = false;
@@ -75,6 +76,9 @@ class SideButtons extends _EventHandler.default {
             break;
           case sideBtnAction.indexOf("TIME_SCALE"):
             super.trig("stop");
+            break;
+          case sideBtnAction.indexOf("SAVE"):
+            super.trig("save");
             break;
         }
       });

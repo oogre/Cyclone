@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 14:27:31
-  @Last Modified time: 2023-02-22 02:01:26
+  @Last Modified time: 2023-02-22 20:02:08
 \*----------------------------------------*/
 
 class Interval {
@@ -46,9 +46,9 @@ class Player extends _EventHandler.default {
       tmp = Math.sqrt(tmp * 0.015625);
     } else {
       tmp = (tmp - 64) * 0.015625;
-      tmp = tmp * tmp * 99 + 1;
+      tmp = tmp * tmp * 9 + 1;
     }
-    this._timeScale = Math.min(Math.max(tmp, 0.01), 100);
+    this._timeScale = Math.min(Math.max(tmp, 0.1), 10);
   }
   set playMode(val) {
     if (this._playMode != Player.NORMAL && Player.NORMAL.isInside(val)) {
@@ -75,7 +75,6 @@ class Player extends _EventHandler.default {
   set track(val) {
     this._track = val;
     this._trackArchive = [...this._track];
-    this.play();
   }
   get track() {
     this._track;
@@ -113,6 +112,7 @@ class Player extends _EventHandler.default {
         await this.loop();
       }
     } catch (error) {
+      this.stopAsked = false;
       this.pause();
     }
   }
@@ -134,6 +134,24 @@ class Player extends _EventHandler.default {
     super.trig("play");
     this.isPlaying = true;
     this.loop();
+  }
+  setup({
+    track,
+    isPlaying
+  }) {
+    this.play();
+    this.stop();
+    setTimeout(() => {
+      this.stopAsked = false;
+      this.track = track;
+      if (isPlaying) this.play();
+    }, 1000);
+  }
+  toObject() {
+    return {
+      track: this._trackArchive,
+      isPlaying: this.isPlaying
+    };
   }
   static NORMAL = new Interval("NORMAL", 0, 31, 1);
   static REVERSE = new Interval("REVERSE", 32, 63, 40);

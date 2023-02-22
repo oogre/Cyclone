@@ -2,7 +2,7 @@
   midiFighter - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 14:27:31
-  @Last Modified time: 2023-02-22 02:03:34
+  @Last Modified time: 2023-02-22 20:02:08
 \*----------------------------------------*/
 
 import {wait} from "./common/tools.js";
@@ -75,7 +75,6 @@ export default class Player extends EventHandler {
 	set track(val){
 		this._track = val;
 		this._trackArchive = [...this._track];
-		this.play();
 	}
 
 	get track(){
@@ -83,7 +82,12 @@ export default class Player extends EventHandler {
 	}
 
 	async loop(){
+		
+		
+
 		if(!this.isPlaying) return;
+
+		
 		try{
 			let {value, delay} = this._track[0];
 			if(delay > 0){
@@ -107,12 +111,16 @@ export default class Player extends EventHandler {
 				this.stopAsked = false;
 				this._track.length = 0;
     		this._trackArchive.length = 0;
+    		
 			}
-
+			
 			if(this.isPlaying){
+				
 				await this.loop();	
 			}
 		}catch(error){
+			
+			this.stopAsked = false;
 			this.pause();
 		}
 	}
@@ -138,6 +146,25 @@ export default class Player extends EventHandler {
     super.trig("play");
 		this.isPlaying = true;
 		this.loop();
+	}
+
+	setup({track, isPlaying}){
+		
+		this.play();
+		this.stop();
+		setTimeout(()=>{
+			this.stopAsked = false;
+			
+			this.track = track;
+			if(isPlaying) this.play();
+		}, 1000)
+	}
+
+	toObject(){
+		return {
+			track : this._trackArchive,
+			isPlaying : this.isPlaying
+		}
 	}
 
 	static NORMAL = new Interval("NORMAL", 0, 31, 1);

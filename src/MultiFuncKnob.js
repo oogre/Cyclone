@@ -2,7 +2,7 @@
   midiFighter - MultiFuncKnob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-20 22:05:35
-  @Last Modified time: 2023-02-22 01:54:38
+  @Last Modified time: 2023-02-22 20:04:27
 \*----------------------------------------*/
 
 import Button from "./Button.js";
@@ -62,10 +62,11 @@ export default class MultiFuncKnob extends EventHandler {
 			});
 		this.timeScale = new Value(64, false)
 			.on("change", ({target:{_value:value}})=>{
+				this.player.timeScale = value;
 				switch(this.mode){
 					case MultiFuncKnob.MODES.TIMESCALE : 
 						this.display.value = value;
-						this.player.timeScale = value;
+						
 						break;
 				}
 			})
@@ -81,9 +82,9 @@ export default class MultiFuncKnob extends EventHandler {
 
 		this.playMode = new Value(0)
 			.on("change", ({target:{_value:value}})=>{
+				this.player.playMode = value;
 				switch(this.mode){
 					case MultiFuncKnob.MODES.PLAYMODE : 
-						this.player.playMode = value;
 						this.display.value = this.player.playMode;
 						break;
 				}
@@ -144,11 +145,13 @@ export default class MultiFuncKnob extends EventHandler {
 					this.display.value = this.player.playMode;
 				});
 			});
+
 		this.recorder = new Recorder(this.value)
 			.on("newRecord", ({target:{record}}) => {
-				this.playMode.value = 0
-				this.player.playMode = 0;
+				this.player.playMode = this.playMode.value = 0;
+				this.player.timeScale = this.timeScale.value = 64;
 				this.player.track = record;
+				this.player.play();
 			});
 	}
 
@@ -156,7 +159,7 @@ export default class MultiFuncKnob extends EventHandler {
 		switch(value){
 			case MultiFuncKnob.MODES.PLAYMODE : 
 				if(!this.player.isLoaded) return;
-				this._mode = MultiFuncKnob.MODES.PLAYMODE;
+				this._mode = value;
 				this.display.stateColor = 60;
 				this.display.anims.playMode[this.player._playMode.name]()
 					.then(()=>this.display.value = this.player.playMode);
@@ -167,13 +170,13 @@ export default class MultiFuncKnob extends EventHandler {
 				if(this._mode == MultiFuncKnob.MODES.DEFAULT){
 					this.recorder.startRecord();
 				}
-				this._mode = MultiFuncKnob.MODES.RECORD;
+				this._mode = value;
 				this.display.stateColor = 80;	
 			break;
 
 			case MultiFuncKnob.MODES.TIMESCALE : 
 				if(!this.player.isLoaded) return;
-				this._mode = MultiFuncKnob.MODES.TIMESCALE;
+				this._mode = value;
 				this.display.stateColor = 100;
 				this.display.value = this.timeScale.value;	
 			break;
@@ -187,7 +190,7 @@ export default class MultiFuncKnob extends EventHandler {
 				if(!this.player.isLoaded && this._mode == MultiFuncKnob.MODES.RECORD){
 					this.recorder.stopRecord();
 				}
-				this._mode = MultiFuncKnob.MODES.DEFAULT;
+				this._mode = value;
 				this.display.value = 0;
 				this.display.stateColor = 120;
 				this.display.displayIntensity(1);
@@ -239,7 +242,29 @@ export default class MultiFuncKnob extends EventHandler {
 		DEFAULT:   Symbol("DEFAULT"),
 		RECORD:    Symbol("RECORD"),
 		TIMESCALE: Symbol("TIMESCALE"),
-		TIMESCALE: Symbol("PLAYMODE")
+		PLAYMODE: Symbol("PLAYMODE")
 	});
 
+	setup({id, mode, value, timeScale, playMode, player}){
+
+		this.id = id;
+		this.value.setup(value);
+	
+		this.player.setup(player);	
+		this.playMode.setup(playMode);
+		this.timeScale.setup(timeScale);
+		
+		this.mode = MultiFuncKnob.MODES[mode];
+	}
+
+	toObject(){
+		return {
+			id : this.id,
+			mode : this._mode.description,
+			value : this.value.toObject(),
+			timeScale : this.timeScale.toObject(),
+			playMode : this.playMode.toObject(),
+			player : this.player.toObject()
+		}
+	}
 }

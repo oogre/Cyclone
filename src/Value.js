@@ -2,7 +2,7 @@
   midiFighter - Value.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-20 21:57:22
-  @Last Modified time: 2023-02-20 23:47:07
+  @Last Modified time: 2023-02-22 19:14:45
 \*----------------------------------------*/
 import EventHandler from "./common/EventHandler.js";
 
@@ -62,6 +62,19 @@ export default class Value extends EventHandler {
 		this.initValue = this.value;
 		super.trig("store", this);
 	}
+	setup({value, loop, initValue}){
+		this.initValue = initValue;
+		this.value = value;
+		this.loop = loop;
+	}
+	toObject(){
+		return {
+			value : this.value,
+			loop : this.loop,
+			initValue : this.initValue,
+		}
+	}
+
 	static INC_VALUE = 65;
 	static DEC_VALUE = 63;
 }
