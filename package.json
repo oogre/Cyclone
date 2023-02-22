@@ -11,10 +11,9 @@
   "author": "Vincent Evrard <vincent@ogre.be>",
   "license": "ISC",
   "dependencies": {
-    "commander": "^9.4.0",
     "fs-extra": "^10.1.0",
     "midi": "^2.0.0",
-    "underscore": "^1.13.4"
+    "underscore": "^1.13.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.7",
