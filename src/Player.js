@@ -2,7 +2,7 @@
   midiFighter - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 14:27:31
-  @Last Modified time: 2023-02-22 01:21:33
+  @Last Modified time: 2023-02-22 02:03:34
 \*----------------------------------------*/
 
 import {wait} from "./common/tools.js";

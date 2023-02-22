@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 14:27:31
-  @Last Modified time: 2023-02-22 01:21:33
+  @Last Modified time: 2023-02-22 02:01:26
 \*----------------------------------------*/
 
 class Interval {
@@ -46,9 +46,9 @@ class Player extends _EventHandler.default {
       tmp = Math.sqrt(tmp * 0.015625);
     } else {
       tmp = (tmp - 64) * 0.015625;
-      tmp = tmp * tmp * 9 + 1;
+      tmp = tmp * tmp * 99 + 1;
     }
-    this._timeScale = Math.min(Math.max(tmp, 0.1), 10);
+    this._timeScale = Math.min(Math.max(tmp, 0.01), 100);
   }
   set playMode(val) {
     if (this._playMode != Player.NORMAL && Player.NORMAL.isInside(val)) {

@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - Display.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-20 22:17:43
-  @Last Modified time: 2023-02-22 01:29:56
+  @Last Modified time: 2023-02-22 01:59:13
 \*----------------------------------------*/
 
 const {
@@ -62,24 +62,24 @@ class Display {
         this.stateColor = color;
       },
       playMode: {
-        NORMAL: async (step = 4) => {
+        NORMAL: async (step = 1) => {
           for (let j = 0; j < 128; j++) {
             this.value = j;
             await (0, _tools.wait)(step);
           }
         },
-        REVERSE: async (step = 4) => {
+        REVERSE: async (step = 1) => {
           for (let j = 127; j >= 0; j--) {
             this.value = j;
             await (0, _tools.wait)(step);
           }
         },
-        PING_PONG: async (step = 4) => {
-          await this.anims.playMode.NORMAL(2);
+        PING_PONG: async (step = 1) => {
+          await this.anims.playMode.NORMAL(1);
           await (0, _tools.wait)(step);
-          await this.anims.playMode.REVERSE(2);
+          await this.anims.playMode.REVERSE(1);
         },
-        RANDOM: async (step = 4) => {
+        RANDOM: async (step = 1) => {
           for (let j = 0; j < 128; j++) {
             this.value = Math.floor(Math.random() * 128);
             await (0, _tools.wait)(step);
