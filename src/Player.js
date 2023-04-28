@@ -2,10 +2,10 @@
   midiFighter - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 14:27:31
-  @Last Modified time: 2023-02-22 20:02:08
+  @Last Modified time: 2023-04-25 19:54:02
 \*----------------------------------------*/
 
-import {wait} from "./common/tools.js";
+import {wait, lerp} from "./common/tools.js";
 import EventHandler from "./common/EventHandler.js";
 
 class Interval{
@@ -30,6 +30,8 @@ export default class Player extends EventHandler {
 
 		super.createHandler("pmChange");
 		this._track = [];
+		this.cursor = 0;
+		this.inc = 1;
 		this._trackArchive = [];
 		this._timeScale = 1;
 		this._playMode = Player.NORMAL;
@@ -52,18 +54,21 @@ export default class Player extends EventHandler {
 		if(this._playMode!=Player.NORMAL && Player.NORMAL.isInside(val)){
 			this._playMode = Player.NORMAL;
 			this._track = [...this._trackArchive];
+			this.inc = 1;
 			this.trig("pmChange", this);
 		}else if(this._playMode!=Player.REVERSE && Player.REVERSE.isInside(val)){
 			this._playMode = Player.REVERSE;
-			this._track = [...this._trackArchive].reverse();
+			this._track = [...this._trackArchive];
+			this.inc = -1;
 			this.trig("pmChange", this);
 		}else if(this._playMode!=Player.PING_PONG && Player.PING_PONG.isInside(val)){
 			this._playMode = Player.PING_PONG;
-			this._track = [...this._trackArchive, ...[...this._trackArchive].reverse()];
+			this._track = [...this._trackArchive];
+			this.inc = 1;
 			this.trig("pmChange", this);
 		}else if(this._playMode!=Player.RANDOM && Player.RANDOM.isInside(val)){
 			this._playMode = Player.RANDOM;
-			this._track = [...this._trackArchive].sort((a, b) => 0.5 - Math.random());
+			this._track = this.randomizer(this._trackArchive, [10, 20]);
 			this.trig("pmChange", this);
 		}
 	}
@@ -81,6 +86,15 @@ export default class Player extends EventHandler {
 		this._track;
 	}
 
+	randomizer(cmds, [inArowMin, inArowMax]){
+		const cmdListTmp = [...cmds];
+    let cmdList = [];
+    while(cmdListTmp.length>0){
+      cmdList = cmdList.concat(cmdListTmp.splice(Math.floor(Math.random() * cmdListTmp.length), Math.floor(lerp(inArowMin, inArowMax, Math.random()))));
+    }
+    return cmdList;
+  }
+
 	async loop(){
 		
 		
@@ -89,37 +103,36 @@ export default class Player extends EventHandler {
 
 		
 		try{
-			let {value, delay} = this._track[0];
+			let {value, delay} = this._track[this.cursor];
 			if(delay > 0){
 				await wait(delay * this._timeScale);
 			}
 			super.trig("tic", {value});
 
-			switch(this._playMode){
-				case Player.RANDOM:
-					if(Math.random() < 0.1){
-						this._track.sort((a, b) => 0.5 - Math.random());	
-					}
-				case Player.NORMAL:
-				case Player.PING_PONG:
-				case Player.REVERSE:
-					this._track.push(this._track.shift());
-				break;
+			if(Player.PING_PONG == this._playMode
+				&& (this.cursor >= this._track.length)
+			){
+				this.inc = -1;
+			}else if (Player.PING_PONG == this._playMode
+				&& (this.cursor <= 0)){
+				this.inc = 1;
 			}
 
+			this.cursor = (this.cursor + this.inc + this._track.length)%this._track.length;
+			
 			if(this.stopAsked){
 				this.stopAsked = false;
 				this._track.length = 0;
     		this._trackArchive.length = 0;
-    		
+    		this.cursor = 0;
 			}
 			
 			if(this.isPlaying){
-				
 				await this.loop();	
 			}
 		}catch(error){
-			
+			// console.log(this._track.length, this.cursor, this._track);
+			// console.log("error", error);
 			this.stopAsked = false;
 			this.pause();
 		}
@@ -135,6 +148,7 @@ export default class Player extends EventHandler {
     this._track.length = 0;
     this._trackArchive.length = 0;
     this.stopAsked = true;
+    console.log("stop");
   }
 
 	pause(){
@@ -146,10 +160,10 @@ export default class Player extends EventHandler {
     super.trig("play");
 		this.isPlaying = true;
 		this.loop();
+		console.log("play");
 	}
 
 	setup({track, isPlaying}){
-		
 		this.play();
 		this.stop();
 		setTimeout(()=>{

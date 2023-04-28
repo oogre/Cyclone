@@ -16,10 +16,12 @@
 				<string>/usr/local/bin/cyclone</string>
 			</array>
 		<key>EnvironmentVariables</key>
-	            <dict>
-	                <key>PATH</key>
-	                <string>/usr/local/sbin:/usr/local/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string>
-	            </dict>
+            <dict>
+                <key>PATH</key>
+                <string>/usr/local/sbin:/usr/local/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+                <key>PYTHON</key>
+                <string>/usr/bin/python2.7</string>
+            </dict>
 		<key>LaunchEvents</key>
 			<dict>
 				<key>com.apple.iokit.matching</key>
