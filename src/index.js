@@ -3,7 +3,7 @@
   midiFighter - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 14:05:42
-  @Last Modified time: 2023-04-26 16:36:23
+  @Last Modified time: 2023-04-28 16:34:30
 \*----------------------------------------*/
 import MidiFighterTwister from "./MidiFighterTwister.js";
 import {wait} from "./common/tools.js";
@@ -15,7 +15,6 @@ const {
 } = conf;
 
 process.title = processName;
-console.log('Environment Variables:', process.env);
 
 (async ()=>{
   await wait(startDelay);
