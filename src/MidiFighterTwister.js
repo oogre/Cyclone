@@ -2,7 +2,7 @@
   midiFighter - MidiFighterTwister.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:35:32
-  @Last Modified time: 2023-04-26 15:18:13
+  @Last Modified time: 2023-10-04 14:50:37
 \*----------------------------------------*/
 import midi from 'midi';
 import SideButtons from "./SideButtons.js";
@@ -11,8 +11,10 @@ import {wait, save, load} from "./common/tools.js";
 import conf from "./common/config.js";
 
 const {
+
 	MIDI_DEVICE_NAME:midiName, 
 	VIRTUAL_MIDI_DEVICE_NAME:midiOutName,
+	PROCESS_NAME:midiOutName2,
 	WATCHDOG_INTERVAL:watchdogInterval,
 	KNOB_PER_BANK:knobPerBank,
 	BANK:bankLength
@@ -52,7 +54,6 @@ export default class MidiFighterTwister {
 				}
 			});
 		try{
-			console.log("YOOO");
 			this.inputMidi = new midi.Input()
 				.on('message', (deltaTime, [status, number, value]) => {
 					const [type, channel] = [status & 0xF0 , status & 0x0F];
@@ -67,14 +68,12 @@ export default class MidiFighterTwister {
 						break;
 					}
 				});
-			console.log("hello");
-			console.log(this.inputMidi);
 		}catch(error){
 			console.log("error");
 			console.log(error);
 			process.exit();
 		}
-		console.log("C");
+		
 		this.inputVirtual = new midi.Input()
 			.on('message', (deltaTime, [status, number, value]) => {
 				const [type, channel] = [status & 0xF0 , status & 0x0F];
@@ -87,35 +86,29 @@ export default class MidiFighterTwister {
 					break;
 				}
 			});
-		console.log("D");
 		this.outputDisplay = new midi.Output();
 		this.outputVirtual = new midi.Output();
-		console.log("E");
+		this.outputVirtual2 = new midi.Output();
 		const [inID, outID] = this.getMidiID(midiName);
 		if(inID < 0 || outID < 0)throw new Error(`MIDI_DEVICE (${midiName}) not found`);
-		console.log("F");
 		this.inputMidi.openPort(inID);
 		this.outputDisplay.openPort(outID);
-		console.log("G");
 		const [inBID, outBID] = this.getMidiID(midiOutName);
 		if(inBID < 0 || outBID < 0){
-			console.log("H");
 			console.log(`MIDI_DEVICE (${midiOutName}) not found`);
 			this.inputVirtual.openVirtualPort(midiOutName);
 			this.outputVirtual.openVirtualPort(midiOutName);
-			console.log("I");
+			this.outputVirtual2.openVirtualPort(midiOutName2);
 		}else{
-			console.log("J");
 			this.inputVirtual.openPort(inBID);
 			this.outputVirtual.openPort(outBID);
-			console.log("K");
+			this.outputVirtual2.openVirtualPort(midiOutName2);
 		}
 		
 		this.knobs = new Array(knobPerBank)
 			.fill(0)
 			.map((_, id) => new MultiFuncKnob(id, 0, this.display.bind(this), this.virtualMidi.bind(this)));
 		this.knobs.map(knob=> knob.mode = MultiFuncKnob.MODES.DEFAULT);
-		console.log("L");
 	}
 
 	display(channel, id, value){
@@ -124,6 +117,7 @@ export default class MidiFighterTwister {
 
 	virtualMidi(channel, id, value){
 		this.outputVirtual.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE|channel, id, value]);	
+		this.outputVirtual2.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE|channel, id, value]);	
 	}
 
 	getMidiID (midiName) {

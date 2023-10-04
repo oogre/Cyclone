@@ -16,7 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - MultiFuncKnob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-20 22:05:35
-  @Last Modified time: 2023-02-22 20:04:27
+  @Last Modified time: 2023-10-04 15:13:58
 \*----------------------------------------*/
 
 const {
@@ -25,7 +25,11 @@ const {
   VIRTUAL_MIDI_CONTROL_CHANNEL: CONTROL_CHANNEL
 } = _config.default;
 const {
-  KNOB_COLORS: knobColors
+  PLAYMODE_COLOR: playModeColor,
+  RECORDMODE_COLOR: recordModeColor,
+  TIMESCALEMODE_COLOR: timescaleModeColor,
+  DEFAULTMODE_LOADED_COLOR: defaultModeLoadedColor,
+  DEFAULTMODE_NOTLOADED_COLOR: defaultModeNotLoadedColor
 } = _config.default.UI;
 class MultiFuncKnob extends _EventHandler.default {
   constructor(id, value = 0, displaySender, virtualMidiSender) {
@@ -144,6 +148,13 @@ class MultiFuncKnob extends _EventHandler.default {
       }
     }).on("stop", () => {
       this.display.anims.reset();
+      this.display.displayIntensity(1);
+      this.display.stateColor = defaultModeNotLoadedColor;
+    }).on("pause", () => {
+      this.display.displayIntensity(1);
+    }).on("play", () => {
+      this.display.anims.reset();
+      this.display.displayStrob(0.75);
     }).on("pmChange", ({
       target: {
         _playMode: {
@@ -171,7 +182,8 @@ class MultiFuncKnob extends _EventHandler.default {
       case MultiFuncKnob.MODES.PLAYMODE:
         if (!this.player.isLoaded) return;
         this._mode = value;
-        this.display.stateColor = 60;
+        this.display.displayIntensity(1);
+        this.display.stateColor = playModeColor;
         this.display.anims.playMode[this.player._playMode.name]().then(() => this.display.value = this.player.playMode);
         break;
       case MultiFuncKnob.MODES.RECORD:
@@ -180,18 +192,20 @@ class MultiFuncKnob extends _EventHandler.default {
           this.recorder.startRecord();
         }
         this._mode = value;
-        this.display.stateColor = 80;
+        this.display.displayIntensity(1);
+        this.display.stateColor = recordModeColor;
         break;
       case MultiFuncKnob.MODES.TIMESCALE:
         if (!this.player.isLoaded) return;
         this._mode = value;
-        this.display.stateColor = 100;
+        this.display.displayIntensity(1);
+        this.display.stateColor = timescaleModeColor;
         this.display.value = this.timeScale.value;
         break;
       case MultiFuncKnob.MODES.DEFAULT:
         if (this._mode == null) {
           this.display.displayIntensity(0);
-          this.display.stateColor = 115;
+          this.display.stateColor = defaultModeNotLoadedColor;
           this.display.anims.fadeIn(this.id * 20);
         }
         if (!this.player.isLoaded && this._mode == MultiFuncKnob.MODES.RECORD) {
@@ -199,8 +213,9 @@ class MultiFuncKnob extends _EventHandler.default {
         }
         this._mode = value;
         this.display.value = 0;
-        this.display.stateColor = 120;
+        this.display.stateColor = this.player.isLoaded ? defaultModeLoadedColor : defaultModeNotLoadedColor;
         this.display.displayIntensity(1);
+        if (this.player.isPlaying) this.display.displayStrob(0.75);
         this.display.value = this.value.value;
         break;
     }

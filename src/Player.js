@@ -2,7 +2,7 @@
   midiFighter - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-21 14:27:31
-  @Last Modified time: 2023-04-25 19:54:02
+  @Last Modified time: 2023-10-04 15:14:45
 \*----------------------------------------*/
 
 import {wait, lerp} from "./common/tools.js";
@@ -50,6 +50,7 @@ export default class Player extends EventHandler {
 		this._timeScale = Math.min(Math.max(tmp, 0.1), 10);
 	}
 
+
 	set playMode(val){
 		if(this._playMode!=Player.NORMAL && Player.NORMAL.isInside(val)){
 			this._playMode = Player.NORMAL;
@@ -68,6 +69,7 @@ export default class Player extends EventHandler {
 			this.trig("pmChange", this);
 		}else if(this._playMode!=Player.RANDOM && Player.RANDOM.isInside(val)){
 			this._playMode = Player.RANDOM;
+			this.inc = 1;
 			this._track = this.randomizer(this._trackArchive, [10, 20]);
 			this.trig("pmChange", this);
 		}
@@ -110,12 +112,9 @@ export default class Player extends EventHandler {
 			super.trig("tic", {value});
 
 			if(Player.PING_PONG == this._playMode
-				&& (this.cursor >= this._track.length)
+				&& (this.cursor >= this._track.length || this.cursor <= 0)
 			){
-				this.inc = -1;
-			}else if (Player.PING_PONG == this._playMode
-				&& (this.cursor <= 0)){
-				this.inc = 1;
+				this.inc = -this.inc;
 			}
 
 			this.cursor = (this.cursor + this.inc + this._track.length)%this._track.length;
@@ -148,19 +147,20 @@ export default class Player extends EventHandler {
     this._track.length = 0;
     this._trackArchive.length = 0;
     this.stopAsked = true;
-    console.log("stop");
+    // console.log("stop");
   }
 
 	pause(){
     super.trig("pause");
 		this.isPlaying = false;
+    // console.log("pause");
 	}
 
 	play(){
     super.trig("play");
 		this.isPlaying = true;
 		this.loop();
-		console.log("play");
+		// console.log("play");
 	}
 
 	setup({track, isPlaying}){

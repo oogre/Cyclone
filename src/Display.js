@@ -2,7 +2,7 @@
   midiFighter - Display.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-20 22:17:43
-  @Last Modified time: 2023-02-22 01:59:13
+  @Last Modified time: 2023-10-04 15:14:58
 \*----------------------------------------*/
 
 import conf from "./common/config.js";

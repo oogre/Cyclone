@@ -14,12 +14,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - MidiFighterTwister.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 16:35:32
-  @Last Modified time: 2023-04-26 15:18:13
+  @Last Modified time: 2023-10-04 14:50:37
 \*----------------------------------------*/
 
 const {
   MIDI_DEVICE_NAME: midiName,
   VIRTUAL_MIDI_DEVICE_NAME: midiOutName,
+  PROCESS_NAME: midiOutName2,
   WATCHDOG_INTERVAL: watchdogInterval,
   KNOB_PER_BANK: knobPerBank,
   BANK: bankLength
@@ -52,7 +53,6 @@ class MidiFighterTwister {
       }
     });
     try {
-      console.log("YOOO");
       this.inputMidi = new _midi.default.Input().on('message', (deltaTime, [status, number, value]) => {
         const [type, channel] = [status & 0xF0, status & 0x0F];
         // console.log(`c: ${channel} n: ${number} v: ${value} d: ${deltaTime}`);
@@ -66,14 +66,11 @@ class MidiFighterTwister {
             break;
         }
       });
-      console.log("hello");
-      console.log(this.inputMidi);
     } catch (error) {
       console.log("error");
       console.log(error);
       process.exit();
     }
-    console.log("C");
     this.inputVirtual = new _midi.default.Input().on('message', (deltaTime, [status, number, value]) => {
       const [type, channel] = [status & 0xF0, status & 0x0F];
       switch (type) {
@@ -85,38 +82,33 @@ class MidiFighterTwister {
           break;
       }
     });
-    console.log("D");
     this.outputDisplay = new _midi.default.Output();
     this.outputVirtual = new _midi.default.Output();
-    console.log("E");
+    this.outputVirtual2 = new _midi.default.Output();
     const [inID, outID] = this.getMidiID(midiName);
     if (inID < 0 || outID < 0) throw new Error(`MIDI_DEVICE (${midiName}) not found`);
-    console.log("F");
     this.inputMidi.openPort(inID);
     this.outputDisplay.openPort(outID);
-    console.log("G");
     const [inBID, outBID] = this.getMidiID(midiOutName);
     if (inBID < 0 || outBID < 0) {
-      console.log("H");
       console.log(`MIDI_DEVICE (${midiOutName}) not found`);
       this.inputVirtual.openVirtualPort(midiOutName);
       this.outputVirtual.openVirtualPort(midiOutName);
-      console.log("I");
+      this.outputVirtual2.openVirtualPort(midiOutName2);
     } else {
-      console.log("J");
       this.inputVirtual.openPort(inBID);
       this.outputVirtual.openPort(outBID);
-      console.log("K");
+      this.outputVirtual2.openVirtualPort(midiOutName2);
     }
     this.knobs = new Array(knobPerBank).fill(0).map((_, id) => new _MultiFuncKnob.default(id, 0, this.display.bind(this), this.virtualMidi.bind(this)));
     this.knobs.map(knob => knob.mode = _MultiFuncKnob.default.MODES.DEFAULT);
-    console.log("L");
   }
   display(channel, id, value) {
     this.outputDisplay.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE | channel, id, value]);
   }
   virtualMidi(channel, id, value) {
     this.outputVirtual.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE | channel, id, value]);
+    this.outputVirtual2.sendMessage([MIDI_MESSAGE.CONTROL_CHANGE | channel, id, value]);
   }
   getMidiID(midiName) {
     return [new Array(this.inputMidi.getPortCount()).fill(0).map((_, id) => this.inputMidi.getPortName(id)).findIndex(value => midiName == value), new Array(this.outputDisplay.getPortCount()).fill(0).map((_, id) => this.outputDisplay.getPortName(id)).findIndex(value => midiName == value)];
