@@ -8,9 +8,11 @@ var _MidiTools = require("./common/MidiTools.js");
 var _config = _interopRequireDefault(require("./common/config.js"));
 var _tools = require("./common/tools.js");
 var _Button = _interopRequireDefault(require("./Bases/Button.js"));
-require("./CustomPannels");
+var Pannels = _interopRequireWildcard(require("./CustomPannels"));
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-console.log("Pannel");
+console.log(Pannels);
 const {
   MIDI_DEVICE_NAME: midiName,
   BANKS: banks
@@ -26,22 +28,37 @@ class MidiFighterTwister {
       this.currentPannel.onCC(channel, number, value, deltaTime);
     });
     this.buttons = {
-      "3-12": new _Button.default().onPressed(() => this.currentPannel = this.currentPannel.next()),
-      "3-9": new _Button.default().onPressed(() => this.currentPannel = this.currentPannel.prev())
+      "3-12": new _Button.default().onPressed(() => this.nextPannel()),
+      "3-9": new _Button.default().onPressed(() => this.prevPannel())
     };
-    this._pannels = (0, _tools.Container)(RegularPannel, bankLength, /* midiSender */(channel, id, value) => {
-      (0, _MidiTools.sendCC)(this.displayInterface, channel, id, value);
+    this._pannels = banks.filter(bankType => !!Pannels[bankType]).map((bankType, id) => {
+      return new Pannels[bankType](id, (channel, id, value) => {
+        (0, _MidiTools.sendCC)(this.displayInterface, channel, id, value);
+      });
     });
-    this.currentPannel = this._pannels[0];
+    this.currentPannel = 0;
   }
-  set currentPannel(value) {
-    if (value == this._currentPannel) return;
-    if (this._currentPannel) this._currentPannel.enable = false;
-    this._currentPannel = value;
-    this._currentPannel.enable = true;
+  nextPannel() {
+    this.currentPannelId = (this.currentPannelId + 1 + this._pannels.length) % this._pannels.length;
+  }
+  prevPannel() {
+    this.currentPannelId = (this.currentPannelId - 1 + this._pannels.length) % this._pannels.length;
+  }
+  set currentPannel(pannelId) {
+    if (pannelId == this._currentPannelId) return;
+    if (this.currentPannel) this.currentPannel.enable = false;
+    this.currentPannelId = pannelId;
+    this.currentPannel.enable = true;
   }
   get currentPannel() {
-    return this._currentPannel;
+    console.log(this.currentPannelId);
+    return this._pannels[this.currentPannelId];
+  }
+  get currentPannelId() {
+    return this._currentPannelId;
+  }
+  set currentPannelId(value) {
+    return this._currentPannelId = value;
   }
 }
 exports.default = MidiFighterTwister;

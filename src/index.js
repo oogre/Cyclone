@@ -3,12 +3,12 @@
   midiFighter - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 14:05:42
-  @Last Modified time: 2024-03-22 20:04:02
+  @Last Modified time: 2024-03-23 21:39:15
 \*----------------------------------------*/
 
 import {wait} from "./common/tools.js";
 import conf from "./common/config.js";
-import MidiFighterTwister from './Bases/MidiFighterTwister.js';
+import MidiFighterTwister from './MidiFighterTwister.js';
 
 const {
 

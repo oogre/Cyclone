@@ -3,13 +3,13 @@
   midiFighter - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 14:05:42
-  @Last Modified time: 2024-03-22 20:04:02
+  @Last Modified time: 2024-03-23 21:39:15
 \*----------------------------------------*/
 "use strict";
 
 var _tools = require("./common/tools.js");
 var _config = _interopRequireDefault(require("./common/config.js"));
-var _MidiFighterTwister = _interopRequireDefault(require("./Bases/MidiFighterTwister.js"));
+var _MidiFighterTwister = _interopRequireDefault(require("./MidiFighterTwister.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const {
   MIDI_DEVICE_NAME: midiName,

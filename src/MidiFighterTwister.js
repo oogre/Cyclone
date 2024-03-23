@@ -8,8 +8,8 @@ import { Container } from "./common/tools.js";
 
 import Button from "./Bases/Button.js";
 
-import "./CustomPannels";
-console.log("Pannel");
+import * as Pannels from "./CustomPannels";
+console.log(Pannels);
 
 const {
 	MIDI_DEVICE_NAME:midiName, 
@@ -50,31 +50,47 @@ export default class MidiFighterTwister{
 		this.midiInterface.onCC((channel, number, value, deltaTime)=>{
 			const button = this.buttons[`${channel}-${number}`];
 			button && button.update(value);
+			
 			this.currentPannel.onCC(channel, number, value, deltaTime);
 		});
 
 		this.buttons = {
-			"3-12" : new Button().onPressed( () => this.currentPannel = this.currentPannel.next()),
-			"3-9" : new Button().onPressed( () => this.currentPannel = this.currentPannel.prev()),
+			"3-12" : new Button().onPressed( () => this.nextPannel()),
+			"3-9" : new Button().onPressed( () => this.prevPannel()),
 		};
 
-
-
-		this._pannels = Container(RegularPannel, bankLength, /* midiSender */(channel, id, value) => {
-			MidiSendCC(this.displayInterface, channel, id, value);
+		this._pannels = banks.filter(bankType=>!!Pannels[bankType]).map((bankType, id)=>{
+			return new Pannels[bankType](id, (channel, id, value) => {
+				MidiSendCC(this.displayInterface, channel, id, value);
+			});
 		});
-
-		this.currentPannel = this._pannels[0];
+		this.currentPannel = 0;
 	}
 
-	set currentPannel(value){
-		if(value == this._currentPannel)return;
-		if(this._currentPannel) this._currentPannel.enable = false;
-		this._currentPannel = value
-		this._currentPannel.enable = true;
+	nextPannel(){
+		this.currentPannelId = (this.currentPannelId + 1 + this._pannels.length) % this._pannels.length
+	}
+	prevPannel(){
+		this.currentPannelId = (this.currentPannelId - 1 + this._pannels.length) % this._pannels.length
+	}
+
+	set currentPannel(pannelId){
+		if(pannelId == this._currentPannelId)return;
+		if(this.currentPannel) this.currentPannel.enable = false;
+		this.currentPannelId = pannelId
+		this.currentPannel.enable = true;
 	}
 
 	get currentPannel(){
-		return this._currentPannel;
+		console.log(this.currentPannelId);
+		return this._pannels[this.currentPannelId];
+	}
+
+	get currentPannelId(){
+		return this._currentPannelId;
+	}
+
+	set currentPannelId(value){
+		return this._currentPannelId = value;
 	}
 }
