@@ -4,61 +4,46 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _EventHandler = _interopRequireDefault(require("./common/EventHandler.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /*----------------------------------------*\
-  midiFighter - Button.js
+  cyclone - Button.js
   @author Evrard Vincent (vincent@ogre.be)
-  @Date:   2023-02-15 18:13:39
-  @Last Modified time: 2023-04-25 19:53:53
+  @Date:   2024-03-22 13:31:52
+  @Last Modified time: 2024-03-22 13:41:16
 \*----------------------------------------*/
 
-const LONG_PRESS_TIMEOUT = 333;
-const DOUBLE_PRESS_TIMEOUT = 333;
-class Button extends _EventHandler.default {
-  constructor(id) {
-    super(id);
-    super.createHandler("pressed");
-    super.createHandler("released");
-    super.createHandler("longPressed");
-    super.createHandler("doublePressed");
-    this.id = id;
-    this._counter = 0;
-    this._isPressed = false;
-    this._wasPressed = false;
-    this._pressTimer;
-    this._pressAt = 0;
+class AntiBounce {
+  constructor(debouce) {
+    this._lastActivation = 0;
+    this._debouce = debouce;
   }
-  set counter(val) {
-    this._counter = val;
-  }
-  get counter() {
-    return this._counter;
-  }
-  set pressed(val) {
-    this._wasPressed = this._isPressed;
-    this._isPressed = !!val;
-    if (this._isPressed && !this._wasPressed) {
-      const now = new Date().getTime();
-      const pressDelay = now - this._pressAt;
-      this._pressAt = now;
-      if (pressDelay < DOUBLE_PRESS_TIMEOUT) {
-        super.trig("doublePressed", this);
-      }
-      super.trig("pressed", this);
-      this._pressTimer = setTimeout(() => {
-        super.trig("longPressed", this);
-      }, LONG_PRESS_TIMEOUT);
+  isValid() {
+    const t = new Date().getTime();
+    if (t - this._lastActivation > this._debouce) {
+      this._lastActivation = t;
+      return true;
     }
-    if (!this._isPressed && this._wasPressed) {
-      clearTimeout(this._pressTimer);
-      super.trig("released", this);
-      this.counter++;
+    return false;
+  }
+}
+class Button extends AntiBounce {
+  constructor(actionHandler) {
+    super(100);
+    this.pressHandler = () => {};
+    this.releasedHandler = () => {};
+  }
+  onPressed(pressHandler) {
+    this.pressHandler = pressHandler;
+    return this;
+  }
+  onPressed(releasedHandler) {
+    this.releasedHandler = releasedHandler;
+    return this;
+  }
+  update(value) {
+    if (this.isValid()) {
+      if (value == 127) this.pressHandler();
+      if (value == 0) this.releasedHandler();
     }
   }
-  get pressed() {
-    return this._isPressed;
-  }
-  static PRESS_VALUE = 127;
 }
 exports.default = Button;

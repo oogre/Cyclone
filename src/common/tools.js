@@ -2,7 +2,7 @@
   midiFighter - tools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 19:31:42
-  @Last Modified time: 2023-02-22 19:04:14
+  @Last Modified time: 2024-03-23 20:59:42
 \*----------------------------------------*/
 
 
@@ -29,6 +29,144 @@ export const load = async (filename) => {
     return JSON.parse(rawConf);
   }catch(error){
 
+  }
+}
+
+
+export function getPropertyDescriptor (obj, key) {
+  if (obj === undefined || obj === null) {
+    throw new TypeError('Cannot convert undefined or null to object');
+  }
+  
+  if (key in obj) {
+    return getRecursivePropertyDescriptor(obj);
+  }
+
+  function getRecursivePropertyDescriptor (obj) {
+    return Object.prototype.hasOwnProperty.call(obj, key)
+      ? Object.getOwnPropertyDescriptor(obj, key)
+    : getRecursivePropertyDescriptor(Object.getPrototypeOf(obj));
+  }
+}
+
+export class MultiHeritage {
+  // Inherit method to create base classes.
+  static inherit(..._bases)
+  {
+    class classes {
+
+      // The base classes
+        get base() { return _bases; }
+
+      constructor(..._args)
+      {
+        var index = 0;
+
+        for (let b of this.base) 
+        {
+          let obj = new b(..._args);
+            MultiHeritage.copy(this, obj);
+        }
+      }
+    
+    }
+
+    // Copy over properties and methods
+    for (let base of _bases) 
+    {
+        MultiHeritage.copy(classes, base);
+        MultiHeritage.copy(classes.prototype, base.prototype);
+    }
+
+    return classes;
+  }
+
+  // Copies the properties from one class to another
+  static copy(_target, _source) 
+  {
+        for (let key of Reflect.ownKeys(_source)) 
+      {
+            if (key !== "constructor" && key !== "prototype" && key !== "name") 
+        {
+                let desc = getPropertyDescriptor(_source, key);
+                Object.defineProperty(_target, key, desc);
+            }
+        }
+  }
+}
+
+/*
+  Container is an Array that has direct access to setters and getters of his element 
+  it does by itself the loop to set or get each individual value on content
+*/
+export const Container = (ContentClass, lenght, ...param)=>{
+  const getPropertyNames  = (obj) => {
+    var propertyNames = [];
+    do {
+      propertyNames.push.apply(propertyNames, Object.getOwnPropertyNames(obj));
+      obj = Object.getPrototypeOf(obj);
+    } while (obj);
+    // get unique property names
+    obj = {};
+    for(var i = 0, len = propertyNames.length; i < len; i++) {
+      obj[propertyNames[i]] = 1;
+    }
+    return Object.keys(obj);
+  }
+
+  const getAllSetterAndGetterOf = (Class)=>{
+    return getPropertyNames(Class.prototype).filter(name=> !["constructor", "__defineGetter__", "hasOwnProperty", "__lookupSetter__", "propertyIsEnumerable", "valueOf", "__defineSetter__", "__lookupGetter__", "isPrototypeOf", "toString", "toLocaleString"].includes(name))
+  }
+
+  const giveSetterAndGetterOfContentToContainer = (Class, container)=>{
+    getAllSetterAndGetterOf(Class).map(name=>{
+      Object.defineProperty(container, name, { 
+        set : (value) => {
+          container.map(content => content[name] = value)
+        },
+        get : () => {
+          return container.map(content => content[name]);
+        }
+      });
+    })
+  }
+  const container = new Array(lenght).fill(0).map((_, id) => new ContentClass(id, ...param));
+  giveSetterAndGetterOfContentToContainer(ContentClass, container);
+  container.map((e, id, {length}) => {
+    e.next = ()=>{
+      return container[(id + 1 + length) % length]
+    }
+    e.prev = ()=>{
+      return container[(id - 1 + length) % length]
+    }
+  })
+  return container;
+}
+
+
+
+export const RGB2HUE = (r, g, b) =>{
+  const color = {
+    red : constrain(0, 255, r)  / 255, 
+    green : constrain(0, 255, g) / 255, 
+    blue : constrain(0, 255, b) / 255
+  };
+  const vMax = Math.max(...Object.values(color));
+  const vMin = Math.min(...Object.values(color));
+  const convert = (hue) => {
+    if (hue == NaN) 
+      return 0;
+    return Math.round((hue * 60 + 360) % 360) ;
+  }
+
+  if(vMax == color.red){
+    return convert((color.green-color.blue)/(vMax-vMin))
+  }
+  else if(vMax == color.green){
+    return convert(2 + (color.blue-color.red)/(vMax-vMin))
+  }
+  else if(vMax == color.blue){
+    return convert(4 + (color.red-color.green)/(vMax-vMin))
   }
 }
 
