@@ -2,7 +2,7 @@
   cyclone - Pixel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-21 01:59:40
-  @Last Modified time: 2024-03-23 09:59:59
+  @Last Modified time: 2024-03-24 00:12:48
 \*----------------------------------------*/
 import {RGB2HUE, lerp, constrain} from "../common/tools.js";
 import OSC from "./OscHelper.js";

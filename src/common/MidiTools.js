@@ -2,7 +2,7 @@
   cyclone - MidiTools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-20 22:46:37
-  @Last Modified time: 2024-03-22 13:45:19
+  @Last Modified time: 2024-03-23 23:47:12
 \*----------------------------------------*/
 
 import midi from 'midi';
@@ -23,8 +23,12 @@ export const getMidiID = (midiName) => {
 export const connectOutput = (midiName)=>{
   const device = new midi.Output();
   const [_, outID] = getMidiID(midiName);
-  if(outID < 0)throw new Error(`MIDI_DEVICE (${midiName}) not found`);
-  device.openPort(outID);
+  if(outID < 0){
+    device.openVirtualPort("hello output");
+    console.log(`MIDI_DEVICE_OUT (${midiName}) not found => go virtual`) ;
+  }else{
+    device.openPort(outID);  
+  }
   return device;
 }
 export const connectInput = (midiName)=>{
@@ -32,8 +36,13 @@ export const connectInput = (midiName)=>{
   let _debug = false;
   const device = new midi.Input();
   const [inID, _] = getMidiID(midiName);
-  if(inID < 0)throw new Error(`MIDI_DEVICE (${midiName}) not found`);
-  device.openPort(inID);
+  
+  if(inID < 0){
+    device.openVirtualPort("hello input");
+    console.log(`MIDI_DEVICE_IN (${midiName}) not found => go virtual`) ;
+  }else{
+    device.openPort(inID);  
+  }
 
   const _onKnob = 
   device.on('message', (deltaTime, [status, number, value]) => {

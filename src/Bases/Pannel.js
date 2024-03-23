@@ -2,23 +2,22 @@
   cyclone - Pannel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 10:11:07
-  @Last Modified time: 2024-03-23 21:20:24
+  @Last Modified time: 2024-03-24 00:12:18
 \*----------------------------------------*/
 import Knob from "./Knob.js";
 import OSC from "./OscHelper.js";
 import conf from "../common/config.js";
-import { Container } from "../common/tools.js";
 
 const {
   KNOB_PER_BANK:knobPerPannel,
 } = conf;
 
 export default class Pannel{
-	constructor(id, midiSender){
+	constructor(id, ...params){
 		this._id = id;
 		this._active = false;
 		this.knobs = new Array(knobPerPannel).fill(0).map((_, id) => {
-				return new Knob(id, midiSender)
+				return new Knob(id, ...params)
 					.onTurn((knob, inc)=> console.log("Turn"))
 					.onPressed((knob)=> console.log("Pressed"))
 					.onReleased((knob)=> console.log("Released"))

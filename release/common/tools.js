@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.dialog = exports.constrain = exports.RGB2HUE = exports.MultiHeritage = exports.Container = void 0;
+exports.dialog = exports.constrain = exports.RGB2HUE = exports.MultiHeritage = void 0;
 exports.getPropertyDescriptor = getPropertyDescriptor;
 exports.wait = exports.save = exports.load = exports.lerp = exports.isNumber = exports.isInteger = exports.isFloat = void 0;
 var _os = _interopRequireDefault(require("os"));
@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - tools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 19:31:42
-  @Last Modified time: 2024-03-23 20:59:42
+  @Last Modified time: 2024-03-23 23:54:41
 \*----------------------------------------*/
 
 const isFloat = n => n === +n && n !== (n | 0);
@@ -88,56 +88,7 @@ class MultiHeritage {
     }
   }
 }
-
-/*
-  Container is an Array that has direct access to setters and getters of his element 
-  it does by itself the loop to set or get each individual value on content
-*/
 exports.MultiHeritage = MultiHeritage;
-const Container = (ContentClass, lenght, ...param) => {
-  const getPropertyNames = obj => {
-    var propertyNames = [];
-    do {
-      propertyNames.push.apply(propertyNames, Object.getOwnPropertyNames(obj));
-      obj = Object.getPrototypeOf(obj);
-    } while (obj);
-    // get unique property names
-    obj = {};
-    for (var i = 0, len = propertyNames.length; i < len; i++) {
-      obj[propertyNames[i]] = 1;
-    }
-    return Object.keys(obj);
-  };
-  const getAllSetterAndGetterOf = Class => {
-    return getPropertyNames(Class.prototype).filter(name => !["constructor", "__defineGetter__", "hasOwnProperty", "__lookupSetter__", "propertyIsEnumerable", "valueOf", "__defineSetter__", "__lookupGetter__", "isPrototypeOf", "toString", "toLocaleString"].includes(name));
-  };
-  const giveSetterAndGetterOfContentToContainer = (Class, container) => {
-    getAllSetterAndGetterOf(Class).map(name => {
-      Object.defineProperty(container, name, {
-        set: value => {
-          container.map(content => content[name] = value);
-        },
-        get: () => {
-          return container.map(content => content[name]);
-        }
-      });
-    });
-  };
-  const container = new Array(lenght).fill(0).map((_, id) => new ContentClass(id, ...param));
-  giveSetterAndGetterOfContentToContainer(ContentClass, container);
-  container.map((e, id, {
-    length
-  }) => {
-    e.next = () => {
-      return container[(id + 1 + length) % length];
-    };
-    e.prev = () => {
-      return container[(id - 1 + length) % length];
-    };
-  });
-  return container;
-};
-exports.Container = Container;
 const RGB2HUE = (r, g, b) => {
   const color = {
     red: constrain(0, 255, r) / 255,

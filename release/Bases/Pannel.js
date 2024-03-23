@@ -7,24 +7,23 @@ exports.default = void 0;
 var _Knob = _interopRequireDefault(require("./Knob.js"));
 var _OscHelper = _interopRequireDefault(require("./OscHelper.js"));
 var _config = _interopRequireDefault(require("../common/config.js"));
-var _tools = require("../common/tools.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /*----------------------------------------*\
   cyclone - Pannel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 10:11:07
-  @Last Modified time: 2024-03-23 21:20:24
+  @Last Modified time: 2024-03-23 23:54:28
 \*----------------------------------------*/
 
 const {
   KNOB_PER_BANK: knobPerPannel
 } = _config.default;
 class Pannel {
-  constructor(id, midiSender) {
+  constructor(id, midiSender, midiOut) {
     this._id = id;
     this._active = false;
     this.knobs = new Array(knobPerPannel).fill(0).map((_, id) => {
-      return new _Knob.default(id, midiSender).onTurn((knob, inc) => console.log("Turn")).onPressed(knob => console.log("Pressed")).onReleased(knob => console.log("Released")).onLongClick(knob => console.log("LongClick")).onDoubleClick(knob => console.log("DoubleClick"));
+      return new _Knob.default(id, midiSender, midiOut).onTurn((knob, inc) => console.log("Turn")).onPressed(knob => console.log("Pressed")).onReleased(knob => console.log("Released")).onLongClick(knob => console.log("LongClick")).onDoubleClick(knob => console.log("DoubleClick"));
     });
   }
   onCC(channel, number, value, deltaTime) {

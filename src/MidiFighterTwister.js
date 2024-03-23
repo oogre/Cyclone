@@ -1,19 +1,15 @@
 import { 
 	connectInput as MidiInConnect, 
-	connectOutput as MidiOutConnect, 
+	connectOutput as MidiOutConnect,
 	sendCC as MidiSendCC
 } from './common/MidiTools.js';
 import conf from "./common/config.js";
-import { Container } from "./common/tools.js";
-
 import Button from "./Bases/Button.js";
-
 import * as Pannels from "./CustomPannels";
-console.log(Pannels);
 
 const {
 	MIDI_DEVICE_NAME:midiName, 
-	BANKS:banks
+	PANNELS:pannels
 } = conf;
 
 const colors = [
@@ -59,11 +55,22 @@ export default class MidiFighterTwister{
 			"3-9" : new Button().onPressed( () => this.prevPannel()),
 		};
 
-		this._pannels = banks.filter(bankType=>!!Pannels[bankType]).map((bankType, id)=>{
-			return new Pannels[bankType](id, (channel, id, value) => {
-				MidiSendCC(this.displayInterface, channel, id, value);
+		this._pannels = pannels
+			.filter(({type})=>!!Pannels[type])
+			.map(({type, midiDeviceName, midiChannel}, id)=>{
+				const PannelType = Pannels[type];
+				const pannel = new PannelType(id, 
+					/* MFT DISPLAY */ 
+					(channel, id, value) => {
+						MidiSendCC(this.displayInterface, channel, id, value);
+					}, 
+					/* MIDI OUT */ 
+					(id, value) => {
+						MidiSendCC(pannel.midiOut, midiChannel, id, value);
+					});
+				pannel.midiOut = MidiOutConnect(midiDeviceName);
+				return pannel;
 			});
-		});
 		this.currentPannel = 0;
 	}
 
@@ -82,7 +89,6 @@ export default class MidiFighterTwister{
 	}
 
 	get currentPannel(){
-		console.log(this.currentPannelId);
 		return this._pannels[this.currentPannelId];
 	}
 
