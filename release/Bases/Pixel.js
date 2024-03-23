@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   cyclone - Pixel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-21 01:59:40
-  @Last Modified time: 2024-03-24 00:02:39
+  @Last Modified time: 2024-03-24 00:12:48
 \*----------------------------------------*/
 
 const RING_CHANNEL = 0x00;
@@ -19,7 +19,7 @@ const COLOR_CHANNEL = 0x01;
 const TAG_CHANNEL = 0x02;
 const VALUE_CHANNEL = 0x05;
 class Pixel {
-  constructor(id, midiDisplay, midiOut) {
+  constructor(id, midiDisplay) {
     this.midiDisplay = midiDisplay;
     this._id = id;
     this._color = 0;

@@ -35,10 +35,13 @@ class MidiFighterTwister {
       type,
       midiDeviceName,
       midiChannel
-    }, _id) => {
-      const pannel = new Pannels[type](_id, /* MFT DISPLAY */(channel, id, value) => {
+    }, id) => {
+      const PannelType = Pannels[type];
+      const pannel = new PannelType(id, /* MFT DISPLAY */
+      (channel, id, value) => {
         (0, _MidiTools.sendCC)(this.displayInterface, channel, id, value);
-      }, /* MIDI OUT */(id, value) => {
+      }, /* MIDI OUT */
+      (id, value) => {
         (0, _MidiTools.sendCC)(pannel.midiOut, midiChannel, id, value);
       });
       pannel.midiOut = (0, _MidiTools.connectOutput)(midiDeviceName);
@@ -47,10 +50,10 @@ class MidiFighterTwister {
     this.currentPannel = 0;
   }
   nextPannel() {
-    this.currentPannelId = (this.currentPannelId + 1 + this._pannels.length) % this._pannels.length;
+    this.currentPannel = (this.currentPannelId + 1 + this._pannels.length) % this._pannels.length;
   }
   prevPannel() {
-    this.currentPannelId = (this.currentPannelId - 1 + this._pannels.length) % this._pannels.length;
+    this.currentPannel = (this.currentPannelId - 1 + this._pannels.length) % this._pannels.length;
   }
   set currentPannel(pannelId) {
     if (pannelId == this._currentPannelId) return;

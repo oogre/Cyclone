@@ -75,10 +75,10 @@ export default class MidiFighterTwister{
 	}
 
 	nextPannel(){
-		this.currentPannelId = (this.currentPannelId + 1 + this._pannels.length) % this._pannels.length
+		this.currentPannel = (this.currentPannelId + 1 + this._pannels.length) % this._pannels.length
 	}
 	prevPannel(){
-		this.currentPannelId = (this.currentPannelId - 1 + this._pannels.length) % this._pannels.length
+		this.currentPannel = (this.currentPannelId - 1 + this._pannels.length) % this._pannels.length
 	}
 
 	set currentPannel(pannelId){

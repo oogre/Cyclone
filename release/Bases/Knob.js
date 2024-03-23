@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   cyclone - Knob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-21 15:11:59
-  @Last Modified time: 2024-03-23 23:55:41
+  @Last Modified time: 2024-03-24 00:15:52
 \*----------------------------------------*/
 
 const getTime = () => new Date().getTime();
@@ -21,7 +21,7 @@ class Knob extends _tools.MultiHeritage.inherit(_Pixel.default, _Button.default)
     super(...params);
     this.turnHandler = () => {};
     this.actions = {
-      channel_0: value => this.turnHandler(this, value - 64),
+      channel_0: value => this.turnHandler(value - 64),
       channel_1: value => this.update(value)
     };
   }

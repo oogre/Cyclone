@@ -12,18 +12,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   cyclone - Pannel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 10:11:07
-  @Last Modified time: 2024-03-23 23:54:28
+  @Last Modified time: 2024-03-24 00:17:09
 \*----------------------------------------*/
 
 const {
   KNOB_PER_BANK: knobPerPannel
 } = _config.default;
 class Pannel {
-  constructor(id, midiSender, midiOut) {
+  constructor(id, ...params) {
     this._id = id;
     this._active = false;
     this.knobs = new Array(knobPerPannel).fill(0).map((_, id) => {
-      return new _Knob.default(id, midiSender, midiOut).onTurn((knob, inc) => console.log("Turn")).onPressed(knob => console.log("Pressed")).onReleased(knob => console.log("Released")).onLongClick(knob => console.log("LongClick")).onDoubleClick(knob => console.log("DoubleClick"));
+      return new _Knob.default(id, ...params).onTurn(inc => console.log("Turn")).onPressed(() => console.log("Pressed")).onReleased(() => console.log("Released")).onLongClick(() => console.log("LongClick")).onDoubleClick(() => console.log("DoubleClick"));
     });
   }
   onCC(channel, number, value, deltaTime) {
