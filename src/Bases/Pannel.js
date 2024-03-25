@@ -2,7 +2,7 @@
   cyclone - Pannel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 10:11:07
-  @Last Modified time: 2024-03-24 00:17:09
+  @Last Modified time: 2024-03-24 18:15:50
 \*----------------------------------------*/
 import Knob from "./Knob.js";
 import OSC from "./OscHelper.js";
@@ -25,6 +25,7 @@ export default class Pannel{
 					.onDoubleClick( () => console.log("DoubleClick") );
 		});
 	}
+
 	onCC(channel, number, value, deltaTime){
 		const knob = this.knobs[number];
 		if(!knob)return;
@@ -32,6 +33,7 @@ export default class Pannel{
 		if(!action)return;
 		action(value, deltaTime);
 	}
+	
 	set enable(value){
 		this._active = !!value;
 		this.knobs.map(k=>k.enable = this._active)

@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   cyclone - Pixel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-21 01:59:40
-  @Last Modified time: 2024-03-24 00:12:48
+  @Last Modified time: 2024-03-24 18:25:21
 \*----------------------------------------*/
 
 const RING_CHANNEL = 0x00;
@@ -135,3 +135,4 @@ class Pixel {
   }
 }
 exports.default = Pixel;
+Pixel.TAG_COLORS = [[255, 0, 0], [255, 64, 0], [255, 128, 0], [255, 192, 0], [255, 255, 0], [192, 255, 0], [128, 255, 0], [64, 255, 0], [0, 255, 0], [0, 255, 64], [0, 255, 128], [0, 255, 192], [0, 255, 255], [0, 192, 255], [0, 128, 255], [0, 64, 255], [0, 0, 255], [64, 0, 255], [128, 0, 255], [192, 0, 255], [255, 0, 255], [255, 0, 192], [255, 0, 128], [255, 0, 64]];

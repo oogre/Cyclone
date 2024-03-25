@@ -3,28 +3,28 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sendCC = exports.send = exports.getMidiID = exports.connectOutput = exports.connectInput = exports.MIDI_MESSAGE = void 0;
+exports.sendCC = exports.send = exports.getID = exports.connectOutput = exports.connectInput = exports.MIDI_MESSAGE = void 0;
 var _midi = _interopRequireDefault(require("midi"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /*----------------------------------------*\
   cyclone - MidiTools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-20 22:46:37
-  @Last Modified time: 2024-03-23 23:47:12
+  @Last Modified time: 2024-03-24 18:12:35
 \*----------------------------------------*/
 
-const getMidiID = midiName => {
+const getID = midiName => {
   const findIdFor = (devices, name) => {
     return new Array(devices.getPortCount()).fill(0).map((_, id) => devices.getPortName(id)).findIndex(value => name == value);
   };
   return [findIdFor(new _midi.default.Input(), midiName), findIdFor(new _midi.default.Output(), midiName)];
 };
-exports.getMidiID = getMidiID;
+exports.getID = getID;
 const connectOutput = midiName => {
   const device = new _midi.default.Output();
-  const [_, outID] = getMidiID(midiName);
+  const [_, outID] = getID(midiName);
   if (outID < 0) {
-    device.openVirtualPort("hello output");
+    device.openVirtualPort(midiName);
     console.log(`MIDI_DEVICE_OUT (${midiName}) not found => go virtual`);
   } else {
     device.openPort(outID);
@@ -36,9 +36,9 @@ const connectInput = midiName => {
   let onCCHandler = () => {};
   let _debug = false;
   const device = new _midi.default.Input();
-  const [inID, _] = getMidiID(midiName);
+  const [inID, _] = getID(midiName);
   if (inID < 0) {
-    device.openVirtualPort("hello input");
+    device.openVirtualPort(midiName);
     console.log(`MIDI_DEVICE_IN (${midiName}) not found => go virtual`);
   } else {
     device.openPort(inID);

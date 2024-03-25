@@ -1,43 +1,32 @@
 import { 
 	connectInput as MidiInConnect, 
 	connectOutput as MidiOutConnect,
-	sendCC as MidiSendCC
+	sendCC as MidiSendCC,
+	getID as getMidiId
 } from './common/MidiTools.js';
+import {wait} from "./common/tools.js";
 import conf from "./common/config.js";
 import Button from "./Bases/Button.js";
 import * as Pannels from "./CustomPannels";
 
+
+console.log(Pannels);
+
+conf.PANNELS = conf.PANNELS.filter(({type})=>{
+	const res = !!Pannels[type];
+	if(!res){
+		console.log(`Pannel Type "${type}" does not exists`);
+	}
+	return res;
+}).map(pannel => {
+	pannel.PannelType = Pannels[pannel.type];
+	return pannel;
+});
+
 const {
 	MIDI_DEVICE_NAME:midiName, 
-	PANNELS:pannels
+	PANNELS:pannelsConf
 } = conf;
-
-const colors = [
-	[255, 0  , 0  ],
-	[255, 64 , 0  ],
-	[255, 128, 0  ],
-	[255, 192, 0  ],
-	[255, 255, 0  ],
-	[192, 255, 0  ],
-	[128, 255, 0  ],
-	[64 , 255, 0  ],
-	[0  , 255, 0  ],
-	[0  , 255, 64 ],
-	[0  , 255, 128],
-	[0  , 255, 192],
-	[0  , 255, 255],
-	[0  , 192, 255],
-	[0  , 128, 255],
-	[0  , 64 , 255],
-	[0  , 0  , 255],
-	[64 , 0  , 255],
-	[128, 0  , 255],
-	[192, 0  , 255],
-	[255, 0  , 255],
-	[255, 0  , 192],
-	[255, 0  , 128],
-	[255, 0  , 64 ]
-];
 
 export default class MidiFighterTwister{
 	constructor(){
@@ -55,10 +44,7 @@ export default class MidiFighterTwister{
 			"3-9" : new Button().onPressed( () => this.prevPannel()),
 		};
 
-		this._pannels = pannels
-			.filter(({type})=>!!Pannels[type])
-			.map(({type, midiDeviceName, midiChannel}, id)=>{
-				const PannelType = Pannels[type];
+		this._pannels = pannelsConf.map(({PannelType, midiDeviceName, midiChannel = 0 , color = null}, id)=>{
 				const pannel = new PannelType(id, 
 					/* MFT DISPLAY */ 
 					(channel, id, value) => {
@@ -67,7 +53,7 @@ export default class MidiFighterTwister{
 					/* MIDI OUT */ 
 					(id, value) => {
 						MidiSendCC(pannel.midiOut, midiChannel, id, value);
-					});
+				});
 				pannel.midiOut = MidiOutConnect(midiDeviceName);
 				return pannel;
 			});
@@ -98,5 +84,11 @@ export default class MidiFighterTwister{
 
 	set currentPannelId(value){
 		return this._currentPannelId = value;
+	}
+	async watchdog(interval){
+		const [inID, outID] = getMidiId(midiName);
+		if(inID < 0 || outID < 0)throw new Error(`MIDI_DEVICE (${midiName}) HAS BEEN DISCONNECTED`);
+		await wait(interval);
+		return this.watchdog(interval);
 	}
 }

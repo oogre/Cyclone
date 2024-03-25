@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.dialog = exports.constrain = exports.RGB2HUE = exports.MultiHeritage = void 0;
 exports.getPropertyDescriptor = getPropertyDescriptor;
-exports.wait = exports.save = exports.load = exports.lerp = exports.isNumber = exports.isInteger = exports.isFloat = void 0;
+exports.wait = exports.save = exports.load = exports.lerp = exports.isNumber = exports.isInteger = exports.isFloat = exports.getTime = void 0;
 var _os = _interopRequireDefault(require("os"));
 var _child_process = require("child_process");
 var _fsExtra = _interopRequireDefault(require("fs-extra"));
@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - tools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 19:31:42
-  @Last Modified time: 2024-03-23 23:54:41
+  @Last Modified time: 2024-03-24 23:03:16
 \*----------------------------------------*/
 
 const isFloat = n => n === +n && n !== (n | 0);
@@ -29,6 +29,8 @@ const lerp = (a, b, amount) => a + (b - a) * constrain(0, 1, amount);
 exports.lerp = lerp;
 const wait = async time => isNumber(time) ? new Promise(s => setTimeout(() => s(), time)) : null;
 exports.wait = wait;
+const getTime = () => new Date().getTime();
+exports.getTime = getTime;
 const save = async data => {
   const address = await dialog.fileSelect();
   return await _fsExtra.default.writeFile(address, data);
