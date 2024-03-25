@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.dialog = exports.constrain = exports.RGB2HUE = exports.MultiHeritage = void 0;
+exports.dialog = exports.constrain = exports.capitalize = exports.RGB2HUE = exports.MultiHeritage = void 0;
 exports.getPropertyDescriptor = getPropertyDescriptor;
 exports.wait = exports.save = exports.load = exports.lerp = exports.isNumber = exports.isInteger = exports.isFloat = exports.getTime = void 0;
 var _os = _interopRequireDefault(require("os"));
@@ -29,6 +29,8 @@ const lerp = (a, b, amount) => a + (b - a) * constrain(0, 1, amount);
 exports.lerp = lerp;
 const wait = async time => isNumber(time) ? new Promise(s => setTimeout(() => s(), time)) : null;
 exports.wait = wait;
+const capitalize = ([firstLetter, ...restOfWord]) => firstLetter.toUpperCase() + restOfWord.join("");
+exports.capitalize = capitalize;
 const getTime = () => new Date().getTime();
 exports.getTime = getTime;
 const save = async data => {

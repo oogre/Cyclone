@@ -16,7 +16,7 @@ export const isNumber = (n) => isFloat(n) || isInteger(n);
 export const constrain = (min, max, value) => Math.min( Math.max(max, min), Math.max(Math.min(max, min), value));
 export const lerp = (a, b, amount) => a + (b - a) * constrain(0, 1, amount);
 export const wait = async (time) => isNumber(time) ? new Promise(s => setTimeout(()=>s(), time)) : null ;
-
+export const capitalize = ([firstLetter, ...restOfWord]) => firstLetter.toUpperCase() + restOfWord.join(""); 
 export const getTime = ()=>(new Date()).getTime();
 
 export const save = async (data)=>{
