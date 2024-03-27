@@ -2,10 +2,13 @@
   cyclone - Button.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 13:31:52
-  @Last Modified time: 2024-03-24 23:56:36
+  @Last Modified time: 2024-03-26 11:19:38
 \*----------------------------------------*/
 
-const getTime = ()=>(new Date()).getTime();
+import Enum from "./Enum.js";
+import {getTime} from "../common/tools.js"
+
+
 
 const AntiBounce = (debouce) => {
 	let _lastActivation = 0;
@@ -21,6 +24,12 @@ const AntiBounce = (debouce) => {
 }
 
 export default class Button{
+	static RELEASED_TYPE = new Enum({
+		NORMAL : 0,
+		LONG : 1,
+		DOUBLE : 2
+	});
+
 	constructor(){
 		this.debounce = AntiBounce(50);
 		this.pressHandler = ()=>{};
@@ -38,14 +47,6 @@ export default class Button{
 		this.releasedHandler = handler;
 		return this;
 	}
-	onLongClick(handler){
-		this.longClickHandler = handler;
-		return this;
-	}
-	onDoubleClick(handler){
-		this.doubleClickHandler = handler;
-		return this;
-	}
 	update(value, deltaTime){
 		const t = getTime();
 		if(this.debounce()){
@@ -53,11 +54,12 @@ export default class Button{
 				this.pressHandler();
 				this.timeAtPressed = t;
 			} else {
-				this.releasedHandler();	
-				if(t - this.timeAtReleased < 500) {
-					this.doubleClickHandler()
-				} else if(t - this.timeAtPressed > 500) {
-					this.longClickHandler()
+				if(t - this.timeAtReleased < 250) {
+					this.releasedHandler(Button.RELEASED_TYPE.DOUBLE);
+				} else if(t - this.timeAtPressed > 250) {
+					this.releasedHandler(Button.RELEASED_TYPE.LONG);
+				}else{
+					this.releasedHandler(Button.RELEASED_TYPE.NORMAL);
 				}
 				this.timeAtReleased = t;
 			}

@@ -2,11 +2,12 @@
   cyclone - Pannel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 10:11:07
-  @Last Modified time: 2024-03-24 18:15:50
+  @Last Modified time: 2024-03-26 10:58:27
 \*----------------------------------------*/
 import Knob from "./Knob.js";
 import OSC from "./OscHelper.js";
 import conf from "../common/config.js";
+import Button from "./Button.js";
 
 const {
   KNOB_PER_BANK:knobPerPannel,
@@ -20,9 +21,15 @@ export default class Pannel{
 				return new Knob(id, ...params)
 					.onTurn( inc => console.log("Turn") )
 					.onPressed( () => console.log("Pressed") )
-					.onReleased( () => console.log("Released") )
-					.onLongClick( () => console.log("LongClick") )
-					.onDoubleClick( () => console.log("DoubleClick") );
+					.onReleased( (releasedType) => {
+						if(Button.RELEASED_TYPE.isNormalClick(releasedType)){
+							console.log("normalReleased");
+						}else if(Button.RELEASED_TYPE.isDoubleClick(releasedType)){
+							console.log("doubleClick");
+						}else if(Button.RELEASED_TYPE.isLongClick(releasedType)){
+							console.log("longClick");
+						}
+					});
 		});
 	}
 

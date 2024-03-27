@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.dialog = exports.constrain = exports.capitalize = exports.RGB2HUE = exports.MultiHeritage = void 0;
 exports.getPropertyDescriptor = getPropertyDescriptor;
-exports.wait = exports.save = exports.load = exports.lerp = exports.isNumber = exports.isInteger = exports.isFloat = exports.getTime = void 0;
+exports.wait = exports.sigmoid = exports.save = exports.load = exports.lerp = exports.isNumber = exports.isInteger = exports.isFloat = exports.getTime = void 0;
 var _os = _interopRequireDefault(require("os"));
 var _child_process = require("child_process");
 var _fsExtra = _interopRequireDefault(require("fs-extra"));
@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   midiFighter - tools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 19:31:42
-  @Last Modified time: 2024-03-24 23:03:16
+  @Last Modified time: 2024-03-26 14:03:28
 \*----------------------------------------*/
 
 const isFloat = n => n === +n && n !== (n | 0);
@@ -33,6 +33,8 @@ const capitalize = ([firstLetter, ...restOfWord]) => firstLetter.toUpperCase() +
 exports.capitalize = capitalize;
 const getTime = () => new Date().getTime();
 exports.getTime = getTime;
+const sigmoid = x => Math.exp(x) / (Math.exp(x) + 1); // INPUT [-6, 6] OUTPUT [0, 1]
+exports.sigmoid = sigmoid;
 const save = async data => {
   const address = await dialog.fileSelect();
   return await _fsExtra.default.writeFile(address, data);

@@ -2,7 +2,7 @@
   midiFighter - tools.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2023-02-15 19:31:42
-  @Last Modified time: 2024-03-24 23:03:16
+  @Last Modified time: 2024-03-26 14:03:28
 \*----------------------------------------*/
 
 
@@ -18,7 +18,7 @@ export const lerp = (a, b, amount) => a + (b - a) * constrain(0, 1, amount);
 export const wait = async (time) => isNumber(time) ? new Promise(s => setTimeout(()=>s(), time)) : null ;
 export const capitalize = ([firstLetter, ...restOfWord]) => firstLetter.toUpperCase() + restOfWord.join(""); 
 export const getTime = ()=>(new Date()).getTime();
-
+export const sigmoid = (x) => Math.exp(x) / (Math.exp(x) + 1); // INPUT [-6, 6] OUTPUT [0, 1]
 export const save = async (data)=>{
   const address = await dialog.fileSelect();
   return await fs.writeFile(address, data);
