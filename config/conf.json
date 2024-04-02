@@ -22,7 +22,22 @@
 		"DEFAULTMODE_NOTLOADED_COLOR" : 120,
 		"DEFAULTMODE_LOADED_COLOR" : 30
 	},
-	"BANK" : 4,
+	"PANNELS" : [{
+		"type" : "SequencerPannel",
+		"midiDeviceName": "seq1",
+		"midiChannel": 0,
+		"COLOR": [64, 0, 127]
+	},{
+		"type" : "SequencerPannel",
+		"midiDeviceName": "seq2",
+		"midiChannel": 0,
+		"COLOR": [127, 64, 0]
+	},{
+		"type" : "RegularPannel",
+		"midiDeviceName": "regular",
+		"midiChannel": 0,
+		"COLOR": [127, 127, 0]
+	}],
 	"KNOB_PER_BANK" : 16,
 	"HOLD_TO_RECORD" : false,
 	"SIDE_BTN_DICT" : [8, 10, 9, 12, 13, 11],

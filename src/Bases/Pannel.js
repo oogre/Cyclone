@@ -2,7 +2,7 @@
   cyclone - Pannel.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-22 10:11:07
-  @Last Modified time: 2024-03-26 10:58:27
+  @Last Modified time: 2024-04-02 19:57:01
 \*----------------------------------------*/
 import Knob from "./Knob.js";
 import OSC from "./OscHelper.js";
@@ -22,11 +22,11 @@ export default class Pannel{
 					.onTurn( inc => console.log("Turn") )
 					.onPressed( () => console.log("Pressed") )
 					.onReleased( (releasedType) => {
-						if(Button.RELEASED_TYPE.isNormalClick(releasedType)){
+						if(releasedType == Button.RELEASED_TYPE.NORMAL){
 							console.log("normalReleased");
-						}else if(Button.RELEASED_TYPE.isDoubleClick(releasedType)){
+						}else if(releasedType == Button.RELEASED_TYPE.DOUBLE){
 							console.log("doubleClick");
-						}else if(Button.RELEASED_TYPE.isLongClick(releasedType)){
+						}else if(releasedType == Button.RELEASED_TYPE.LONG){
 							console.log("longClick");
 						}
 					});
