@@ -2,7 +2,7 @@
   MFT - Controler.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-25 00:47:44
-  @Last Modified time: 2024-03-26 16:29:01
+  @Last Modified time: 2024-04-02 19:16:43
 \*----------------------------------------*/
 
 import Speeder from "./CustomKnobs/Speeder.js";
@@ -25,7 +25,13 @@ export default class ControlerKnob{
 		if(this._current != value){
 				if(!!this._current)this._current.disactive();
 				this._current = value;
-				this._current.active();
+				if(this.speeder == value){
+					setTimeout(()=>this._current.active(), 500)	
+				}else{
+					this._current.active();
+				}
+				
+				
 		}
 	}
 	onSpeeder(handler){

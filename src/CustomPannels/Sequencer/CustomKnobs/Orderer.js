@@ -2,14 +2,14 @@
   MFT - Orderer.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-25 19:45:42
-  @Last Modified time: 2024-03-26 16:35:48
+  @Last Modified time: 2024-04-02 19:31:15
 \*----------------------------------------*/
 
 import {wait} from "../../../common/tools.js";
 
 export default class Orderer{
 	constructor(knob, midiOut){
-		this.reset();
+		
 		this.knob = knob;
 		this.color = [0, 255, 0];
 		this._active = false;
@@ -69,10 +69,11 @@ export default class Orderer{
 			},
 			develop : values => [...values].sort(()=>Math.random() - 0.5)
 		}];
-		this.setCurrent();
+		this.reset();
 	}
-	reset(){
+	async reset(){
 		this.value = 0;
+		await this.setCurrent();
 		this.changeHandler && this.changeHandler(this.current);
 	}
 	async setCurrent (forceAnim = false){

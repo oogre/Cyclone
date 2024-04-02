@@ -2,7 +2,7 @@
   MFT - SequencerKnob.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-25 19:49:56
-  @Last Modified time: 2024-03-26 16:23:18
+  @Last Modified time: 2024-04-02 19:22:29
 \*----------------------------------------*/
 
 import Recorder from "./CustomKnobs/Recorder.js";
@@ -25,6 +25,7 @@ export default class SequencerKnob{
 				})
 				.onReleased(releasedType => {
 					if(releasedType == Button.RELEASED_TYPE.DOUBLE){
+						knob.value = this.value = 0;
 						return this.current = this.stop;
 					}else if(this.recorder.isValid()){
 						this.player.band = this.recorder.band;

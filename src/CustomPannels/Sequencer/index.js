@@ -2,7 +2,7 @@
   MFT - index.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-25 00:45:52
-  @Last Modified time: 2024-03-26 16:27:38
+  @Last Modified time: 2024-04-02 19:32:13
 \*----------------------------------------*/
 
 
@@ -26,7 +26,7 @@ export default class SequencerPannel extends Pannel{
 			.filter((knob, id)=>id % 4 == 0 || id % 4 == 3)
 			.map( knob => new SequencerKnob(knob, midiOut))
 			.map( (sequencer, id) => {
-				sequencer.onStop(()=>this.controlers[id].reset());
+				sequencer.onStop(()=> this.controlers[id].reset() );
 				sequencer.order = this.controlers[id].orderer.current;
 				return sequencer;
 			});

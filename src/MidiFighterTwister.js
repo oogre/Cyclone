@@ -10,8 +10,6 @@ import Button from "./Bases/Button.js";
 import * as Pannels from "./CustomPannels";
 
 
-console.log(Pannels);
-
 conf.PANNELS = conf.PANNELS.filter(({type})=>{
 	const res = !!Pannels[type];
 	if(!res){
@@ -35,7 +33,6 @@ export default class MidiFighterTwister{
 		this.midiInterface.onCC((channel, number, value, deltaTime)=>{
 			const button = this.buttons[`${channel}-${number}`];
 			button && button.update(value);
-			
 			this.currentPannel.onCC(channel, number, value, deltaTime);
 		});
 

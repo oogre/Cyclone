@@ -2,7 +2,7 @@
   MFT - Player.js
   @author Evrard Vincent (vincent@ogre.be)
   @Date:   2024-03-25 20:02:30
-  @Last Modified time: 2024-03-26 16:34:34
+  @Last Modified time: 2024-04-02 19:14:43
 \*----------------------------------------*/
 import {wait, sigmoid, lerp} from "../../../common/tools.js";
 
@@ -57,8 +57,8 @@ export default class Player{
 	}
 	set speed (value){
 		const cursor = sigmoid((value/127) * 12 - 6) * 2 - 1
-		if(cursor < 0)this._timeScale = lerp(1, 0.1, Math.abs(cursor));
-		else this._timeScale = lerp(1, 10, Math.abs(cursor));
+		if(cursor > 0)this._timeScale = lerp(1, 0.125, Math.abs(cursor));
+		else this._timeScale = lerp(1, 8, Math.abs(cursor));
 		this._goNext();
 		this._resetWait = new Promise( resolve => this._goNext = resolve);
 	}
